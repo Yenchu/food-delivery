@@ -9,6 +9,7 @@ import idv.fd.restaurant.model.OpenHours;
 import idv.fd.restaurant.model.Restaurant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -19,6 +20,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @RestController
+@Validated
 @Slf4j
 public class RestaurantController implements RestaurantApi {
 
@@ -117,21 +119,16 @@ public class RestaurantController implements RestaurantApi {
     public List<? extends RestaurantInfo> findRestaurantsByDishNumb(
             @RequestParam(name = "dishNumb") @Min(1) @Max(1000) int dishNumb,
             @RequestParam(name = "lessThan", required = false, defaultValue = "false") boolean lessThan,
-            @RequestParam(name = "maxPrice", required = false) Double maxPrice,
-            @RequestParam(name = "minPrice", required = false) Double minPrice) {
+            @RequestParam(name = "maxPrice", required = false) BigDecimal maxPrice,
+            @RequestParam(name = "minPrice", required = false) BigDecimal minPrice) {
 
         log.debug("find restaurants by dishNumb {} lessThan {} maxPrice {} minPrice{}", dishNumb, lessThan, maxPrice, minPrice);
         QryDishNumb qryDishNumb = QryDishNumb.builder()
                 .dishNumb(dishNumb)
                 .lessThan(lessThan)
+                .maxPrice(maxPrice)
+                .minPrice(minPrice)
                 .build();
-
-        if (maxPrice != null) {
-            qryDishNumb.setMaxPrice(BigDecimal.valueOf(maxPrice));
-        }
-        if (minPrice != null) {
-            qryDishNumb.setMinPrice(BigDecimal.valueOf(minPrice));
-        }
 
         return restaurantService.findRestaurantsByDishNumb(qryDishNumb);
     }

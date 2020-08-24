@@ -51,7 +51,7 @@ public class PurchaseController implements PurchaseApi {
      */
     @GetMapping(value = "/transactions/top-users")
     public List<UserTxAmount> findTopTxUsers(
-            @RequestParam(name = "top", required = false, defaultValue = "10") @Min(1) @Max(100) int top,
+            @RequestParam(name = "top", required = false, defaultValue = "10") @Min(1) @Max(1000) int top,
             @RequestParam("fromDate") @DateTimeFormat(pattern = DATE_FORMAT) LocalDate from,
             @RequestParam("toDate") @DateTimeFormat(pattern = DATE_FORMAT) LocalDate to) {
 
@@ -105,7 +105,7 @@ public class PurchaseController implements PurchaseApi {
      */
     @GetMapping(value = "/transactions/user-count")
     public Count getUserCount(
-            @RequestParam("amount") BigDecimal amount,
+            @RequestParam("amount") @Min(0) BigDecimal amount,
             @RequestParam("fromDate") @DateTimeFormat(pattern = DATE_FORMAT) LocalDate from,
             @RequestParam("toDate") @DateTimeFormat(pattern = DATE_FORMAT) LocalDate to,
             @RequestParam(name = "lessThan", required = false, defaultValue = "false") boolean lessThan) {

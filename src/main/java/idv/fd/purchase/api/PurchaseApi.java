@@ -49,12 +49,12 @@ public interface PurchaseApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @Parameter(name = "top", description = "The specified top x")
-    @Parameter(name = "fromDate", description = "The specified start date")
-    @Parameter(name = "toDate", description = "The specified end date")
+    @Parameter(name = "top", description = "The specified top x (min = 1, max = 1000)")
+    @Parameter(name = "fromDate", description = "The specified start date (format is MM/dd/yyyy), eg: 12/25/2019")
+    @Parameter(name = "toDate", description = "The specified end date (format is MM/dd/yyyy), eg: 02/14/2020")
     @GetMapping(value = "/transactions/top-users")
     List<UserTxAmount> findTopTxUsers(
-            @RequestParam(name = "top", required = false, defaultValue = "10") @Min(1) @Max(100) int top,
+            @RequestParam(name = "top", required = false, defaultValue = "10") @Min(1) @Max(1000) int top,
             @RequestParam("fromDate") LocalDate from,
             @RequestParam("toDate") LocalDate to);
 
@@ -68,8 +68,8 @@ public interface PurchaseApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @Parameter(name = "fromDate", description = "The specified start date")
-    @Parameter(name = "toDate", description = "The specified end date")
+    @Parameter(name = "fromDate", description = "The specified start date (format is MM/dd/yyyy), eg: 12/25/2019")
+    @Parameter(name = "toDate", description = "The specified end date (format is MM/dd/yyyy), eg: 02/14/2020")
     @GetMapping(value = "/transactions/sum")
     List<TxNumbAmount> findTxNumbAmount(
             @RequestParam("fromDate") LocalDate from,
@@ -85,7 +85,7 @@ public interface PurchaseApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @Parameter(name = "byAmount", description = "To indicate it's by transaction amount or number of transactions")
+    @Parameter(name = "byAmount", description = "To indicate it's calculated by transaction amount or number of transactions")
     @GetMapping(value = "/transactions/max-restaurants")
     List<RestaurantTxAmount> findMaxTxRestaurants(
             @RequestParam(name = "byAmount", required = false, defaultValue = "false") boolean byAmount);
@@ -101,12 +101,12 @@ public interface PurchaseApi {
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
     @Parameter(name = "amount", description = "The specified transaction amount")
-    @Parameter(name = "fromDate", description = "The specified start date")
-    @Parameter(name = "toDate", description = "The specified end date")
+    @Parameter(name = "fromDate", description = "The specified start date (format is MM/dd/yyyy), eg: 12/25/2019")
+    @Parameter(name = "toDate", description = "The specified end date (format is MM/dd/yyyy), eg: 02/14/2020")
     @Parameter(name = "lessThan", description = "To indicate less or more than the specified transaction amount")
     @GetMapping(value = "/transactions/user-count")
     Count getUserCount(
-            @RequestParam("amount") BigDecimal amount,
+            @RequestParam("amount") @Min(0) BigDecimal amount,
             @RequestParam("fromDate") LocalDate from,
             @RequestParam("toDate") LocalDate to,
             @RequestParam(name = "lessThan", required = false, defaultValue = "false") boolean lessThan);

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.List;
@@ -24,7 +25,7 @@ import java.util.List;
 public interface OpenHoursApi {
 
     @Operation(summary = "Find open hours by pagination", tags = {"OpenHours"})
-    @Parameter(name = "page", description = "The specified page")
+    @Parameter(name = "page", description = "The specified page, start from `0`")
     @Parameter(name = "size", description = "The number of records in the page")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
@@ -41,8 +42,8 @@ public interface OpenHoursApi {
 
 
     @Operation(summary = "Find open hours by time", tags = {"OpenHours"})
-    @Parameter(name = "time", description = "The specified time")
-    @Parameter(name = "dayOfWeek", description = "A day of week")
+    @Parameter(name = "time", description = "The specified time (format is HH:mm), eg: 18:30")
+    @Parameter(name = "dayOfWeek", description = "A day of week (Sun = 0, Sat = 6)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = OpenHours.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),

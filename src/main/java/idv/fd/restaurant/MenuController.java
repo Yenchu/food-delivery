@@ -4,13 +4,17 @@ import idv.fd.restaurant.api.MenuApi;
 import idv.fd.restaurant.dto.EditMenu;
 import idv.fd.restaurant.model.Menu;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
+@Validated
 @Slf4j
 public class MenuController implements MenuApi {
 
@@ -56,14 +60,11 @@ public class MenuController implements MenuApi {
      */
     @GetMapping(value = "/menus/findByPrice", params = "maxPrice")
     public List<Menu> findMenusWithinPrices(
-            @RequestParam(name = "maxPrice") double maxPrice,
-            @RequestParam(name = "minPrice", required = false, defaultValue = "0") double minPrice,
+            @RequestParam(name = "maxPrice") @Min(1) BigDecimal maxPrice,
+            @RequestParam(name = "minPrice", required = false, defaultValue = "0") BigDecimal minPrice,
             @RequestParam(name = "sort", required = false) String sortField) {
 
         log.debug("find menus within maxPrice {} minPrice {} sortField {}", maxPrice, minPrice, sortField);
-        BigDecimal maxPriceBd = BigDecimal.valueOf(maxPrice);
-        BigDecimal minPriceBd = BigDecimal.valueOf(minPrice);
-
-        return menuService.findMenusWithinPrices(minPriceBd, maxPriceBd, sortField);
+        return menuService.findMenusWithinPrices(minPrice, maxPrice, sortField);
     }
 }

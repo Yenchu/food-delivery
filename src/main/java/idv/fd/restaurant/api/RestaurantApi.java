@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Tag(name = "Restaurant", description = "The Restaurant APIs")
@@ -74,8 +75,8 @@ public interface RestaurantApi {
 
 
     @Operation(summary = "List all restaurants that are open at a certain time on a day of the week", tags = {"Restaurant"})
-    @Parameter(name = "time", description = "The specified open time")
-    @Parameter(name = "dayOfWeek", description = "The day of week")
+    @Parameter(name = "time", description = "The specified open time (format is HH:mm), eg: 18:30")
+    @Parameter(name = "dayOfWeek", description = "A day of week (Sun = 0, Sat = 6)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestaurantInfo.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
@@ -91,7 +92,7 @@ public interface RestaurantApi {
 
 
     @Operation(summary = "List all restaurants that are open for more or less than x hours per day or week", tags = {"Restaurant"})
-    @Parameter(name = "openHours", description = "The specified open hours")
+    @Parameter(name = "openHours", description = "The specified open hours (min = 1, max = 24)")
     @Parameter(name = "lessThan", description = "To indicate less or more than the specified open hours")
     @Parameter(name = "perWeek", description = "To indicate per week or per day")
     @ApiResponses(value = {
@@ -110,10 +111,10 @@ public interface RestaurantApi {
 
 
     @Operation(summary = "List all restaurants that have more or less than x number of dishes within a price range", tags = {"Restaurant"})
-    @Parameter(name = "dishNumb", description = "The specified dish number")
+    @Parameter(name = "dishNumb", description = "The specified dish number (min = 1, max = 1000)")
     @Parameter(name = "lessThan", description = "To indicate less or more than the specified dish number")
-    @Parameter(name = "maxPrice", description = "Max price of dish")
-    @Parameter(name = "minPrice", description = "Min price of dish")
+    @Parameter(name = "maxPrice", description = "Max dish price")
+    @Parameter(name = "minPrice", description = "Min dish price")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestaurantInfo.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
@@ -126,6 +127,6 @@ public interface RestaurantApi {
     List<? extends RestaurantInfo> findRestaurantsByDishNumb(
             @RequestParam(name = "dishNumb") @Min(1) @Max(1000) int dishNumb,
             @RequestParam(name = "lessThan", required = false, defaultValue = "false") boolean lessThan,
-            @RequestParam(name = "maxPrice", required = false) Double maxPrice,
-            @RequestParam(name = "minPrice", required = false) Double minPrice);
+            @RequestParam(name = "maxPrice", required = false) BigDecimal maxPrice,
+            @RequestParam(name = "minPrice", required = false) BigDecimal minPrice);
 }
