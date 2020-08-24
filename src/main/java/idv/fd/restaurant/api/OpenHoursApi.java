@@ -13,10 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.util.List;
@@ -25,8 +22,6 @@ import java.util.List;
 public interface OpenHoursApi {
 
     @Operation(summary = "Find open hours by pagination", tags = {"OpenHours"})
-    @Parameter(name = "page", description = "The specified page, start from `0`")
-    @Parameter(name = "size", description = "The number of records in the page")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = OpenHours.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
@@ -37,13 +32,11 @@ public interface OpenHoursApi {
     })
     @GetMapping("/open-hours")
     Page<OpenHours> findOpenHours(
-            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(name = "size", required = false, defaultValue = "10") int size);
+            @Parameter(name = "page", description = "The specified page, start from `0`") int page,
+            @Parameter(name = "size", description = "The number of records in the page") int size);
 
 
     @Operation(summary = "Find open hours by time", tags = {"OpenHours"})
-    @Parameter(name = "time", description = "The specified time (format is HH:mm), eg: 18:30")
-    @Parameter(name = "dayOfWeek", description = "A day of week (Sun = 0, Sat = 6)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = OpenHours.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
@@ -54,12 +47,11 @@ public interface OpenHoursApi {
     })
     @GetMapping(value = "/open-hours/findByTime", params = "time")
     List<OpenHours> findOpenHoursByTime(
-            @RequestParam(name = "time") String timeStr,
-            @RequestParam(name = "dayOfWeek", required = false) @Min(0) @Max(6) Integer dayOfWeek);
+            @Parameter(name = "time", description = "The specified time (format is HH:mm), eg: 18:30") String timeStr,
+            @Parameter(name = "dayOfWeek", description = "A day of week (Sun = 0, Sat = 6)") @Min(0) @Max(6) Integer dayOfWeek);
 
 
     @Operation(summary = "Find open hours by restaurant ID", tags = {"OpenHours"})
-    @Parameter(name = "restaurantId", description = "The specified restaurant ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = OpenHours.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
@@ -70,6 +62,5 @@ public interface OpenHoursApi {
     })
     @GetMapping(value = "/open-hours/findByRestaurant", params = "restaurantId")
     List<OpenHours> findOpenHoursByRestaurant(
-            @PathVariable(name = "restaurantId") Long restaurantId);
-
+            @Parameter(name = "restaurantId", description = "The specified restaurant ID") Long restaurantId);
 }

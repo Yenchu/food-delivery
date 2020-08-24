@@ -16,7 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 
@@ -24,8 +23,6 @@ import javax.validation.Valid;
 public interface UserApi {
 
     @Operation(summary = "Find users by pagination", tags = {"User"})
-    @Parameter(name = "page", description = "The specified page")
-    @Parameter(name = "size", description = "The number of records in the page")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = User.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
@@ -36,8 +33,8 @@ public interface UserApi {
     })
     @GetMapping("/users")
     Page<User> findUsers(
-            @RequestParam(name = "page", required = false, defaultValue = "0") int page,
-            @RequestParam(name = "size", required = false, defaultValue = "10") int size);
+            @Parameter(name = "page", description = "The specified page") int page,
+            @Parameter(name = "size", description = "The number of records in the page") int size);
 
 
     @Operation(summary = "Edit user name", tags = {"User"})

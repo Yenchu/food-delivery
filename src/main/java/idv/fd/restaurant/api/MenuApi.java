@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -39,7 +38,6 @@ public interface MenuApi {
 
 
     @Operation(summary = "Search dishes by dish name", tags = {"Menu"})
-    @Parameter(name = "dishName", description = "The specified dish name")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Menu.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
@@ -49,13 +47,11 @@ public interface MenuApi {
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
     @GetMapping(value = "/menus/findByDishName", params = "dishName")
-    List<Menu> findMenusByDishName(String dishName);
+    List<Menu> findMenusByDishName(
+            @Parameter(name = "dishName", description = "The specified dish name") String dishName);
 
 
     @Operation(summary = "List all dishes that are within a price range, sorted by price or alphabetically", tags = {"Menu"})
-//    @Parameter(name = "maxPrice", description = "Max dish price (min = 1.0)")
-//    @Parameter(name = "minPrice", description = "Min dish price")
-//    @Parameter(name = "sort", description = "Sorted field, by price or dish name")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Menu.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),

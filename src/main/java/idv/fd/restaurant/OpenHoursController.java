@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,7 +45,7 @@ public class OpenHoursController implements OpenHoursApi {
 
     @GetMapping(value = "/open-hours/findByRestaurant", params = "restaurantId")
     public List<OpenHours> findOpenHoursByRestaurant(
-            @PathVariable(name = "restaurantId") Long restaurantId) {
+            @RequestParam(name = "restaurantId") Long restaurantId) {
 
         log.debug("find open hours by restaurant {}", restaurantId);
         return openHoursService.findOpenHoursByRestaurant(restaurantId);
