@@ -26,12 +26,10 @@ public class OpenHours {
 
     private int dayOfWeek;
 
-    @Column(columnDefinition = "TIME")
-    @JsonFormat( pattern = "HH:mm" )
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime openTime;
 
-    @Column(columnDefinition = "TIME")
-    @JsonFormat( pattern = "HH:mm" )
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime closedTime;
 
     private int openPeriod; // minutes

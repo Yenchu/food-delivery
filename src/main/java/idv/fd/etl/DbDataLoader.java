@@ -1,5 +1,6 @@
 package idv.fd.etl;
 
+import idv.fd.etl.dto.RestaurantMenus;
 import idv.fd.restaurant.model.Menu;
 import idv.fd.restaurant.MenuRepository;
 import idv.fd.restaurant.model.Restaurant;
@@ -44,7 +45,7 @@ public class DbDataLoader {
             throw new RuntimeException("there are still restaurant data in database, please clean it first!");
         }
 
-        return dbDataCreator.createRestaurantData()
+        return dbDataCreator.createRestaurants()
                 .buffer(100)
                 .map(restaurantRepository::saveAll)
                 .flatMap(Flux::fromIterable);
@@ -58,7 +59,7 @@ public class DbDataLoader {
 
         Map<String, RestaurantMenus> restMenusMap = getRestaurantMenus();
 
-        return dbDataCreator.createUserData()
+        return dbDataCreator.createUserPurchaseHistories()
                 .map(tuple -> {
                     User user = tuple.getT1();
                     List<PurchaseHistory> phs = tuple.getT2();

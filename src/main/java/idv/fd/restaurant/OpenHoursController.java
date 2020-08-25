@@ -33,7 +33,7 @@ public class OpenHoursController implements OpenHoursApi {
         return openHoursService.findOpenHours(page, size);
     }
 
-    @GetMapping(value = "/open-hours/findByTime", params = "time")
+    @GetMapping("/open-hours/findByTime")
     public List<OpenHours> findOpenHoursByTime(
             @RequestParam(name = "time") String timeStr,
             @RequestParam(name = "dayOfWeek", required = false) @Min(0) @Max(6) Integer dayOfWeek) {
@@ -43,7 +43,7 @@ public class OpenHoursController implements OpenHoursApi {
         return openHoursService.findOpenHoursByTime(dayOfWeek, time);
     }
 
-    @GetMapping(value = "/open-hours/findByRestaurant", params = "restaurantId")
+    @GetMapping("/open-hours/findByRestaurant")
     public List<OpenHours> findOpenHoursByRestaurant(
             @RequestParam(name = "restaurantId") Long restaurantId) {
 

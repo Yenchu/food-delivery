@@ -1,6 +1,7 @@
 package idv.fd.restaurant.api;
 
 import idv.fd.error.AppError;
+import idv.fd.restaurant.dto.DishInfo;
 import idv.fd.restaurant.dto.EditMenu;
 import idv.fd.restaurant.model.Menu;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +26,7 @@ import java.util.List;
 public interface MenuApi {
 
     @Operation(summary = "Edit dish name, dish price of menu", tags = {"Menu"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(schema = @Schema(implementation = Menu.class), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -37,22 +38,8 @@ public interface MenuApi {
     Menu updateMenu(@Valid @RequestBody EditMenu editMenu);
 
 
-    @Operation(summary = "Search dishes by dish name", tags = {"Menu"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Menu.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
-            @ApiResponse(responseCode = "400", description = "Bad request",
-                    content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE)),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
-    })
-    @GetMapping(value = "/menus/findByDishName", params = "dishName")
-    List<Menu> findMenusByDishName(
-            @Parameter(name = "dishName", description = "The specified dish name") String dishName);
-
-
     @Operation(summary = "List all dishes that are within a price range, sorted by price or alphabetically", tags = {"Menu"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Menu.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -60,9 +47,24 @@ public interface MenuApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @GetMapping(value = "/menus/findByPrice", params = "maxPrice")
-    List<Menu> findMenusWithinPrices(
+    @GetMapping("/menus/findByPrice")
+    List<DishInfo> findMenusWithinPrices(
             @Parameter(name = "maxPrice", description = "Max dish price (min = 1.0)") @Min(1) BigDecimal maxPrice,
             @Parameter(name = "minPrice", description = "Min dish price") BigDecimal minPrice,
             @Parameter(name = "sort", description = "Sorted field, by price or dish name") String sortField);
+
+
+    @Operation(summary = "Search dishes by dish name", tags = {"Menu"})
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = Menu.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
+            @ApiResponse(responseCode = "400", description = "Bad request",
+                    content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE)),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
+    })
+    @GetMapping("/menus/findByDishName")
+    List<DishInfo> findMenusByDishName(
+            @Parameter(name = "dishName", description = "The specified dish name") String dishName);
+
 }

@@ -46,27 +46,13 @@ public class RestaurantController implements RestaurantApi {
     }
 
     /**
-     * 7. Search for restaurants or dishes by name, ranked by relevance to search term
-     *
-     * @param name
-     * @return
-     */
-    @GetMapping(value = "/restaurants/findByName", params = "name")
-    public List<RestaurantInfo> findRestaurantsByName(
-            @RequestParam(name = "name") String name) {
-
-        log.debug("find restaurants by name {}", name);
-        return restaurantService.findRestaurantsByName(name);
-    }
-
-    /**
      * 1. List all restaurants that are open at a certain datetime
      * 2. List all restaurants that are open on a day of the week, at a certain time
      *
      * @param timeStr
      * @return
      */
-    @GetMapping(value = "/restaurants/findByOpenTime", params = "time")
+    @GetMapping("/restaurants/findByTime")
     public List<RestaurantInfo> findRestaurantsByTime(
             @RequestParam(name = "time") String timeStr,
             @RequestParam(name = "dayOfWeek", required = false) @Min(0) @Max(6) Integer dayOfWeek) {
@@ -89,7 +75,7 @@ public class RestaurantController implements RestaurantApi {
      * @param perWeek
      * @return
      */
-    @GetMapping(value = "/restaurants/findByOpenHours", params = "openHours")
+    @GetMapping("/restaurants/findByOpenHours")
     public List<? extends RestaurantInfo> findRestaurantsByOpenPeriod(
             @RequestParam(name = "openHours") @Min(1) @Max(24) int openHours,
             @RequestParam(name = "lessThan", required = false, defaultValue = "false") boolean lessThan,
@@ -115,7 +101,7 @@ public class RestaurantController implements RestaurantApi {
      * @param minPrice
      * @return
      */
-    @GetMapping(value = "restaurants/findByDishNumb", params = "dishNumb")
+    @GetMapping("restaurants/findByDishNumb")
     public List<? extends RestaurantInfo> findRestaurantsByDishNumb(
             @RequestParam(name = "dishNumb") @Min(1) @Max(1000) int dishNumb,
             @RequestParam(name = "lessThan", required = false, defaultValue = "false") boolean lessThan,
@@ -131,5 +117,19 @@ public class RestaurantController implements RestaurantApi {
                 .build();
 
         return restaurantService.findRestaurantsByDishNumb(qryDishNumb);
+    }
+
+    /**
+     * 7. Search for restaurants or dishes by name, ranked by relevance to search term
+     *
+     * @param name
+     * @return
+     */
+    @GetMapping("/restaurants/findByName")
+    public List<RestaurantInfo> findRestaurantsByName(
+            @RequestParam(name = "name") String name) {
+
+        log.debug("find restaurants by name {}", name);
+        return restaurantService.findRestaurantsByName(name);
     }
 }

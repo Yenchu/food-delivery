@@ -9,8 +9,7 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Override
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<User> findById(Long id);
+    Optional<User> queryById(Long id);
 
 }

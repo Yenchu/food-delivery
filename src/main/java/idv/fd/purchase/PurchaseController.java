@@ -49,7 +49,7 @@ public class PurchaseController implements PurchaseApi {
      * @param to
      * @return
      */
-    @GetMapping(value = "/transactions/top-users")
+    @GetMapping("/transactions/top-users")
     public List<UserTxAmount> findTopTxUsers(
             @RequestParam(name = "top", required = false, defaultValue = "10") @Min(1) @Max(1000) int top,
             @RequestParam("fromDate") @DateTimeFormat(pattern = DATE_FORMAT) LocalDate from,
@@ -69,7 +69,7 @@ public class PurchaseController implements PurchaseApi {
      * @param to
      * @return
      */
-    @GetMapping(value = "/transactions/sum")
+    @GetMapping("/transactions/sum")
     public List<TxNumbAmount> findTxNumbAmount(
             @RequestParam("fromDate") @DateTimeFormat(pattern = DATE_FORMAT) LocalDate from,
             @RequestParam("toDate") @DateTimeFormat(pattern = DATE_FORMAT) LocalDate to) {
@@ -87,7 +87,7 @@ public class PurchaseController implements PurchaseApi {
      * @param byAmount
      * @return
      */
-    @GetMapping(value = "/transactions/max-restaurants")
+    @GetMapping("/transactions/max-restaurants")
     public List<RestaurantTxAmount> findMaxTxRestaurants(
             @RequestParam(name = "byAmount", required = false, defaultValue = "false") boolean byAmount) {
 
@@ -103,7 +103,7 @@ public class PurchaseController implements PurchaseApi {
      * @param to
      * @return
      */
-    @GetMapping(value = "/transactions/user-count")
+    @GetMapping("/transactions/user-count")
     public Count getUserCount(
             @RequestParam("amount") @Min(0) BigDecimal amount,
             @RequestParam("fromDate") @DateTimeFormat(pattern = DATE_FORMAT) LocalDate from,

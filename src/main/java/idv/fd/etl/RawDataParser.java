@@ -2,6 +2,8 @@ package idv.fd.etl;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import idv.fd.etl.dto.RestaurantVo;
+import idv.fd.etl.dto.UserVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

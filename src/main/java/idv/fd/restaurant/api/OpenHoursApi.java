@@ -22,7 +22,7 @@ import java.util.List;
 public interface OpenHoursApi {
 
     @Operation(summary = "Find open hours by pagination", tags = {"OpenHours"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = OpenHours.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -37,7 +37,7 @@ public interface OpenHoursApi {
 
 
     @Operation(summary = "Find open hours by time", tags = {"OpenHours"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = OpenHours.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -45,14 +45,14 @@ public interface OpenHoursApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @GetMapping(value = "/open-hours/findByTime", params = "time")
+    @GetMapping("/open-hours/findByTime")
     List<OpenHours> findOpenHoursByTime(
             @Parameter(name = "time", description = "The specified time (format is HH:mm), eg: 18:30") String timeStr,
             @Parameter(name = "dayOfWeek", description = "A day of week (Sun = 0, Sat = 6)") @Min(0) @Max(6) Integer dayOfWeek);
 
 
     @Operation(summary = "Find open hours by restaurant ID", tags = {"OpenHours"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = OpenHours.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -60,7 +60,7 @@ public interface OpenHoursApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @GetMapping(value = "/open-hours/findByRestaurant", params = "restaurantId")
+    @GetMapping("/open-hours/findByRestaurant")
     List<OpenHours> findOpenHoursByRestaurant(
             @Parameter(name = "restaurantId", description = "The specified restaurant ID") Long restaurantId);
 }

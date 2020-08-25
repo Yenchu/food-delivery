@@ -40,14 +40,14 @@ public interface PurchaseHistoryRepository extends JpaRepository<PurchaseHistory
 
     @Query(value = "select restaurant_id as restaurantId, restaurant_name as restaurantName, count(id) as txNumb"
             + " from purchase_history"
-            + " group by restaurantId"
+            + " group by restaurantId, restaurantName"
             + " having txNumb ="
             + " (select max(c.txCount) from (select restaurant_id, count(id) as txCount from purchase_history group by restaurant_id) c)", nativeQuery = true)
     List<RestaurantTxAmount> findMaxTxNumbRestaurants();
 
     @Query(value = "select restaurant_id as restaurantId, restaurant_name as restaurantName, sum(transaction_amount) as txAmount"
             + " from purchase_history"
-            + " group by restaurantId"
+            + " group by restaurantId, restaurantName"
             + " having txAmount ="
             + " (select max(c.txSum) from (select restaurant_id, sum(transaction_amount) as txSum from purchase_history group by restaurant_id) c)", nativeQuery = true)
     List<RestaurantTxAmount> findMaxTxAmountRestaurants();

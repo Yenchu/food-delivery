@@ -29,7 +29,7 @@ import java.util.List;
 public interface RestaurantApi {
 
     @Operation(summary = "Find restaurants by pagination", tags = {"Restaurant"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = Restaurant.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -44,7 +44,7 @@ public interface RestaurantApi {
 
 
     @Operation(summary = "Edit restaurant name", tags = {"Restaurant"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(schema = @Schema(implementation = Restaurant.class), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -56,22 +56,8 @@ public interface RestaurantApi {
     Restaurant updateRestaurant(@Valid @RequestBody EditRestaurant editRest);
 
 
-    @Operation(summary = "Search restaurants by name", tags = {"Restaurant"})
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Successful operation",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestaurantInfo.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
-            @ApiResponse(responseCode = "400", description = "Bad request",
-                    content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE)),
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
-    })
-    @GetMapping(value = "/restaurants/findByName", params = "name")
-    List<RestaurantInfo> findRestaurantsByName(
-            @Parameter(name = "name", description = "The specified restaurant name") String name);
-
-
     @Operation(summary = "List all restaurants that are open at a certain time on a day of the week", tags = {"Restaurant"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestaurantInfo.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -79,14 +65,14 @@ public interface RestaurantApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @GetMapping(value = "/restaurants/findByOpenTime", params = "time")
+    @GetMapping("/restaurants/findByTime")
     List<RestaurantInfo> findRestaurantsByTime(
             @Parameter(name = "time", description = "The specified open time (format is HH:mm), eg: 18:30") String timeStr,
             @Parameter(name = "dayOfWeek", description = "A day of week (Sun = 0, Sat = 6)") @Min(0) @Max(6) Integer dayOfWeek);
 
 
     @Operation(summary = "List all restaurants that are open for more or less than x hours per day or week", tags = {"Restaurant"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestaurantInfo.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -94,7 +80,7 @@ public interface RestaurantApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @GetMapping(value = "/restaurants/findByOpenHours", params = "openHours")
+    @GetMapping("/restaurants/findByOpenHours")
     List<? extends RestaurantInfo> findRestaurantsByOpenPeriod(
             @Parameter(name = "openHours", description = "The specified open hours (min = 1, max = 24)") @Min(1) @Max(24) int openHours,
             @Parameter(name = "lessThan", description = "To indicate less or more than the specified open hours") boolean lessThan,
@@ -102,7 +88,7 @@ public interface RestaurantApi {
 
 
     @Operation(summary = "List all restaurants that have more or less than x number of dishes within a price range", tags = {"Restaurant"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestaurantInfo.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -110,10 +96,25 @@ public interface RestaurantApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @GetMapping(value = "restaurants/findByDishNumb", params = "dishNumb")
+    @GetMapping("restaurants/findByDishNumb")
     List<? extends RestaurantInfo> findRestaurantsByDishNumb(
             @Parameter(name = "dishNumb", description = "The specified dish number (min = 1, max = 1000)") @Min(1) @Max(1000) int dishNumb,
             @Parameter(name = "lessThan", description = "To indicate less or more than the specified dish number") boolean lessThan,
             @Parameter(name = "maxPrice", description = "Max dish price") BigDecimal maxPrice,
             @Parameter(name = "minPrice", description = "Min dish price") BigDecimal minPrice);
+
+
+    @Operation(summary = "Search restaurants by name")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful operation",
+                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestaurantInfo.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
+            @ApiResponse(responseCode = "400", description = "Bad request",
+                    content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE)),
+            @ApiResponse(responseCode = "500", description = "Internal server error",
+                    content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
+    })
+    @GetMapping("/restaurants/findByName")
+    List<RestaurantInfo> findRestaurantsByName(
+            @Parameter(name = "name", description = "The specified restaurant name") String name);
+
 }

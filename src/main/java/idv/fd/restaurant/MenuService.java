@@ -1,8 +1,9 @@
 package idv.fd.restaurant;
 
+import idv.fd.error.AppException;
+import idv.fd.restaurant.dto.DishInfo;
 import idv.fd.restaurant.dto.EditMenu;
 import idv.fd.restaurant.model.Menu;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,29 +20,51 @@ public class MenuService {
         this.menuRepository = menuRepository;
     }
 
+    public Menu findMenuById(Long id) {
+
+        Optional<Menu> optMenu = menuRepository.findById(id);
+        if (optMenu.isEmpty()) {
+            throw AppException.badRequest(String.format("menu %d not found", id));
+        }
+        return optMenu.get();
+    }
+
+    @Transactional
+    public Menu findMenuByIdLocked(Long id) {
+
+        // use queryById with pessimistic lock
+        Optional<Menu> optMenu = menuRepository.queryById(id);
+        if (optMenu.isEmpty()) {
+            throw AppException.badRequest(String.format("menu %d not found", id));
+        }
+        return optMenu.get();
+    }
+
     @Transactional
     public Menu updateMenu(EditMenu editMenu) {
 
-        Optional<Menu> optMenu = menuRepository.findById(editMenu.getMenuId());
-        if (optMenu.isEmpty()) {
-            throw new RuntimeException("menu not found: " + editMenu.getMenuId());
-        }
-        Menu menu = optMenu.get();
+        Menu menu = findMenuByIdLocked(editMenu.getMenuId());
 
         menu.setDishName(editMenu.getDishName());
         menu.setPrice(editMenu.getPrice());
         return menu;
     }
 
-    public List<Menu> findMenusByDishName(String dishName) {
+    public List<DishInfo> findMenusByDishName(String dishName) {
 
         return menuRepository.findByDishNameContainingOrderByDishName(dishName);
     }
 
-    public List<Menu> findMenusWithinPrices(BigDecimal minPrice, BigDecimal maxPrice, String sortField) {
+    public List<DishInfo> findMenusWithinPrices(BigDecimal minPrice, BigDecimal maxPrice) {
 
-        Sort sort = "dishName".equalsIgnoreCase(sortField) ? Sort.by("dishName") : Sort.by("price");
+        return findMenusWithinPrices(minPrice, maxPrice, null);
+    }
 
-        return menuRepository.findByPriceGreaterThanEqualAndPriceLessThanEqual(minPrice, maxPrice, sort);
+    public List<DishInfo> findMenusWithinPrices(BigDecimal minPrice, BigDecimal maxPrice, String sortField) {
+
+        // sort fields are database column name
+        sortField = "dish_name".equalsIgnoreCase(sortField) ? "dish_name" : "price";
+
+        return menuRepository.findByPriceGreaterThanEqualAndPriceLessThanEqual(minPrice, maxPrice, sortField);
     }
 }

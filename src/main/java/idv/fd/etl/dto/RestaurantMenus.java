@@ -1,4 +1,4 @@
-package idv.fd.etl;
+package idv.fd.etl.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,10 +1,10 @@
 package idv.fd.restaurant;
 
+import idv.fd.error.AppException;
 import idv.fd.restaurant.dto.EditRestaurant;
 import idv.fd.restaurant.dto.QryDishNumb;
 import idv.fd.restaurant.dto.QryOpenPeriod;
 import idv.fd.restaurant.dto.RestaurantInfo;
-import idv.fd.restaurant.model.OpenHours;
 import idv.fd.restaurant.model.Restaurant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,14 +38,30 @@ public class RestaurantService {
         return restaurantRepository.findAll(pr);
     }
 
+    public Restaurant findRestaurantById(Long id) {
+
+        Optional<Restaurant> optRest = restaurantRepository.findById(id);
+        if (optRest.isEmpty()) {
+            throw AppException.badRequest(String.format("restaurant %d not found", id));
+        }
+        return optRest.get();
+    }
+
+    @Transactional
+    public Restaurant findRestaurantByIdLocked(Long id) {
+
+        // use queryById with pessimistic lock
+        Optional<Restaurant> optRest = restaurantRepository.queryById(id);
+        if (optRest.isEmpty()) {
+            throw AppException.badRequest(String.format("restaurant %d not found", id));
+        }
+        return optRest.get();
+    }
+
     @Transactional
     public Restaurant updateRestaurant(EditRestaurant editRest) {
 
-        Optional<Restaurant> optRes = restaurantRepository.findById(editRest.getRestaurantId());
-        if (optRes.isEmpty()) {
-            throw new RuntimeException("restaurant not found: " + editRest.getRestaurantId());
-        }
-        Restaurant rest = optRes.get();
+        Restaurant rest = findRestaurantByIdLocked(editRest.getRestaurantId());
 
         rest.setName(editRest.getRestaurantName());
         return rest;
@@ -68,6 +84,7 @@ public class RestaurantService {
 
     public List<? extends RestaurantInfo> findRestaurantsByOpenPeriod(QryOpenPeriod qryOpenPeriod) {
 
+        // open period in database is minute unit
         int openMinutes = qryOpenPeriod.getOpenHours() * 60;
 
         List<? extends RestaurantInfo> rests;
@@ -87,7 +104,6 @@ public class RestaurantService {
                 rests = openHoursRepository.findOpenPeriodGreaterThan(openMinutes);
             }
         }
-
         return rests;
     }
 

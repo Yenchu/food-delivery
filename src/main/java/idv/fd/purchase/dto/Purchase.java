@@ -16,9 +16,6 @@ public class Purchase {
     private Long userId;
 
     @NotNull
-    private Long restaurantId;
-
-    @NotNull
     private Long menuId;
 
 }

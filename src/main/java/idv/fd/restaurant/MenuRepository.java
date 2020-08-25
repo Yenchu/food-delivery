@@ -1,5 +1,6 @@
 package idv.fd.restaurant;
 
+import idv.fd.restaurant.dto.DishInfo;
 import idv.fd.restaurant.dto.DishNumb;
 import idv.fd.restaurant.model.Menu;
 import org.springframework.data.domain.Sort;
@@ -19,13 +20,28 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
             + " from menu m"
             + " inner join restaurant r on m.restaurant_id = r.id";
 
-    @Override
+    String SELECT_DISH_INFO = "select r.id as restaurantId, r.name as restaurantName, m.id as menuId, m.dish_name dishName, m.price as price"
+            + " from menu m"
+            + " inner join restaurant r on m.restaurant_id = r.id";
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Menu> findById(Long id);
+    Optional<Menu> queryById(Long id);
 
-    List<Menu> findByDishNameContainingOrderByDishName(String dishName);
+    //List<Menu> findByDishNameContainingOrderByDishName(String dishName);
 
-    List<Menu> findByPriceGreaterThanEqualAndPriceLessThanEqual(BigDecimal minPrice, BigDecimal maxPrice, Sort sort);
+    //List<Menu> findByPriceGreaterThanEqualAndPriceLessThanEqual(BigDecimal minPrice, BigDecimal maxPrice, Sort sort);
+
+
+    @Query(value = SELECT_DISH_INFO
+            + " where m.dish_name like %?1%"
+            + " order by dishName", nativeQuery = true)
+    List<DishInfo> findByDishNameContainingOrderByDishName(String dishName);
+
+
+    @Query(value = SELECT_DISH_INFO
+            + " where m.price >= :minPrice and m.price <= :maxPrice"
+            + " order by :sortField", nativeQuery = true)
+    List<DishInfo> findByPriceGreaterThanEqualAndPriceLessThanEqual(BigDecimal minPrice, BigDecimal maxPrice, String sortField);
 
 
     @Query(value = SELECT_DISH_NUMB

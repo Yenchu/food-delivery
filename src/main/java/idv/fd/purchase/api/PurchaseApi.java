@@ -27,7 +27,7 @@ import java.util.List;
 public interface PurchaseApi {
 
     @Operation(summary = "Purchase a dish from a restaurant", tags = {"Purchase"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(schema = @Schema(implementation = PurchaseHistory.class), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -40,7 +40,7 @@ public interface PurchaseApi {
 
 
     @Operation(summary = "Find top x users by total transaction amount within a date range", tags = {"Purchase"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserTxAmount.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -48,7 +48,7 @@ public interface PurchaseApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @GetMapping(value = "/transactions/top-users")
+    @GetMapping("/transactions/top-users")
     List<UserTxAmount> findTopTxUsers(
             @Parameter(name = "top", description = "The specified top x (min = 1, max = 1000)") @Min(1) @Max(1000) int top,
             @Parameter(name = "fromDate", description = "The specified start date (format is MM/dd/yyyy), eg: 12/25/2019") LocalDate from,
@@ -56,7 +56,7 @@ public interface PurchaseApi {
 
 
     @Operation(summary = "Find total number and dollar value of transactions that happened within a date range", tags = {"Purchase"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = TxNumbAmount.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -64,14 +64,14 @@ public interface PurchaseApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @GetMapping(value = "/transactions/sum")
+    @GetMapping("/transactions/sum")
     List<TxNumbAmount> findTxNumbAmount(
             @Parameter(name = "fromDate", description = "The specified start date (format is MM/dd/yyyy), eg: 12/25/2019") LocalDate from,
             @Parameter(name = "toDate", description = "The specified end date (format is MM/dd/yyyy), eg: 02/14/2020") LocalDate to);
 
 
     @Operation(summary = "Find most popular restaurants by transaction volume, either by number of transactions or transaction dollar value", tags = {"Purchase"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(array = @ArraySchema(schema = @Schema(implementation = RestaurantTxAmount.class)), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -79,13 +79,13 @@ public interface PurchaseApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @GetMapping(value = "/transactions/max-restaurants")
+    @GetMapping("/transactions/max-restaurants")
     List<RestaurantTxAmount> findMaxTxRestaurants(
             @Parameter(name = "byAmount", description = "To indicate it's calculated by transaction amount or number of transactions") boolean byAmount);
 
 
     @Operation(summary = "Find total number of users who made transactions above or below $v within a date range", tags = {"Purchase"})
-    @ApiResponses(value = {
+    @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successful operation",
                     content = @Content(schema = @Schema(implementation = Count.class), mediaType = MediaType.APPLICATION_JSON_VALUE)),
             @ApiResponse(responseCode = "400", description = "Bad request",
@@ -93,7 +93,7 @@ public interface PurchaseApi {
             @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(schema = @Schema(implementation = AppError.class), mediaType = MediaType.APPLICATION_JSON_VALUE))
     })
-    @GetMapping(value = "/transactions/user-count")
+    @GetMapping("/transactions/user-count")
     Count getUserCount(
             @Parameter(name = "amount", description = "The specified transaction amount") @Min(0) BigDecimal amount,
             @Parameter(name = "fromDate", description = "The specified start date (format is MM/dd/yyyy), eg: 12/25/2019") LocalDate from,

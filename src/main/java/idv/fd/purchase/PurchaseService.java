@@ -1,16 +1,13 @@
 package idv.fd.purchase;
 
-import idv.fd.purchase.dto.Count;
-import idv.fd.purchase.dto.RestaurantTxAmount;
-import idv.fd.purchase.dto.TxNumbAmount;
-import idv.fd.purchase.dto.UserTxAmount;
-import idv.fd.purchase.dto.Purchase;
+import idv.fd.error.AppException;
+import idv.fd.purchase.dto.*;
 import idv.fd.purchase.model.PurchaseHistory;
-import idv.fd.restaurant.MenuRepository;
-import idv.fd.restaurant.RestaurantRepository;
+import idv.fd.restaurant.MenuService;
+import idv.fd.restaurant.RestaurantService;
 import idv.fd.restaurant.model.Menu;
 import idv.fd.restaurant.model.Restaurant;
-import idv.fd.user.UserRepository;
+import idv.fd.user.UserService;
 import idv.fd.user.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,55 +16,44 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
 public class PurchaseService {
 
-    private UserRepository userRepository;
-
     private PurchaseHistoryRepository purchaseHistoryRepository;
 
-    private RestaurantRepository restaurantRepository;
+    private UserService userService;
 
-    private MenuRepository menuRepository;
+    private RestaurantService restaurantService;
 
-    public PurchaseService(UserRepository userRepository, PurchaseHistoryRepository purchaseHistoryRepository,
-                           RestaurantRepository restaurantRepository, MenuRepository menuRepository) {
-        this.userRepository = userRepository;
+    private MenuService menuService;
+
+    public PurchaseService(PurchaseHistoryRepository purchaseHistoryRepository, UserService userService, RestaurantService restaurantService, MenuService menuService) {
         this.purchaseHistoryRepository = purchaseHistoryRepository;
-        this.restaurantRepository = restaurantRepository;
-        this.menuRepository = menuRepository;
+        this.userService = userService;
+        this.restaurantService = restaurantService;
+        this.menuService = menuService;
     }
 
     @Transactional
     public PurchaseHistory purchaseDish(Purchase purchase) {
 
-        Optional<User> optUser = userRepository.findById(purchase.getUserId());
-        if (optUser.isEmpty()) {
-            throw new RuntimeException("user not found: " + purchase.getUserId());
-        }
-        User user = optUser.get();
+        // find and lock user
+        User user = userService.findUserByIdLocked(purchase.getUserId());
 
-        Optional<Restaurant> optRest = restaurantRepository.findById(purchase.getRestaurantId());
-        if (optRest.isEmpty()) {
-            throw new RuntimeException("restaurant not found: " + purchase.getRestaurantId());
-        }
-        Restaurant rest = optRest.get();
+        Menu menu = menuService.findMenuById(purchase.getMenuId());
 
-        Optional<Menu> optMenu = menuRepository.findById(purchase.getMenuId());
-        if (optMenu.isEmpty()) {
-            throw new RuntimeException("menu not found: " + purchase.getMenuId());
-        }
-        Menu menu = optMenu.get();
+        // find and lock restaurant
+        Restaurant rest = restaurantService.findRestaurantByIdLocked(menu.getRestaurant().getId());
 
         BigDecimal amount = menu.getPrice();
 
         BigDecimal userNewBalance = user.getCashBalance().subtract(amount);
         if (userNewBalance.longValue() <= 0) {
-            throw new RuntimeException("user doesn't have enough to buy dish: " + amount);
+            throw AppException.badRequest(String.format("user doesn't have enough balance to buy dish with price %d", amount));
         }
+
         user.setCashBalance(userNewBalance);
 
         BigDecimal resNewBalance = rest.getCashBalance().add(amount);
@@ -82,7 +68,7 @@ public class PurchaseService {
                 .build();
 
         ph = purchaseHistoryRepository.save(ph);
-        log.info("purchase: {}", ph);
+        log.info("purchase record: {}", ph);
         return ph;
     }
 

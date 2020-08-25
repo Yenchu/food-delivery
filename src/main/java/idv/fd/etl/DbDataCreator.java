@@ -1,5 +1,7 @@
 package idv.fd.etl;
 
+import idv.fd.etl.dto.RestaurantVo;
+import idv.fd.etl.dto.UserVo;
 import idv.fd.restaurant.model.Menu;
 import idv.fd.restaurant.model.OpenHours;
 import idv.fd.restaurant.model.Restaurant;
@@ -26,13 +28,13 @@ public class DbDataCreator {
         this.openHoursDataParser = openHoursDataParser;
     }
 
-    public Flux<Restaurant> createRestaurantData() {
+    public Flux<Restaurant> createRestaurants() {
 
         return rawDataParser.parseRestaurantData()
                 .map(this::toRestaurant);
     }
 
-    public Flux<Tuple2<User, List<PurchaseHistory>>> createUserData() {
+    public Flux<Tuple2<User, List<PurchaseHistory>>> createUserPurchaseHistories() {
 
         return rawDataParser.parseUserData()
                 .map(vo -> {

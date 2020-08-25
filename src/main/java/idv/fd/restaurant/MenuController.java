@@ -1,6 +1,7 @@
 package idv.fd.restaurant;
 
 import idv.fd.restaurant.api.MenuApi;
+import idv.fd.restaurant.dto.DishInfo;
 import idv.fd.restaurant.dto.EditMenu;
 import idv.fd.restaurant.model.Menu;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +9,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.util.List;
@@ -38,19 +38,6 @@ public class MenuController implements MenuApi {
     }
 
     /**
-     * 7. Search for restaurants or dishes by name, ranked by relevance to search term
-     *
-     * @param dishName
-     * @return
-     */
-    @GetMapping(value = "/menus/findByDishName", params = "dishName")
-    public List<Menu> findMenusByDishName(String dishName) {
-
-        log.debug("find menus by dish name {}", dishName);
-        return menuService.findMenusByDishName(dishName);
-    }
-
-    /**
      * 4. List all dishes that are within a price range, sorted by price or alphabetically
      *
      * @param maxPrice
@@ -58,13 +45,26 @@ public class MenuController implements MenuApi {
      * @param sortField
      * @return
      */
-    @GetMapping(value = "/menus/findByPrice", params = "maxPrice")
-    public List<Menu> findMenusWithinPrices(
+    @GetMapping("/menus/findByPrice")
+    public List<DishInfo> findMenusWithinPrices(
             @RequestParam(name = "maxPrice") @Min(1) BigDecimal maxPrice,
             @RequestParam(name = "minPrice", required = false, defaultValue = "0") BigDecimal minPrice,
             @RequestParam(name = "sort", required = false) String sortField) {
 
         log.debug("find menus within maxPrice {} minPrice {} sortField {}", maxPrice, minPrice, sortField);
         return menuService.findMenusWithinPrices(minPrice, maxPrice, sortField);
+    }
+
+    /**
+     * 7. Search for restaurants or dishes by name, ranked by relevance to search term
+     *
+     * @param dishName
+     * @return
+     */
+    @GetMapping("/menus/findByDishName")
+    public List<DishInfo> findMenusByDishName(String dishName) {
+
+        log.debug("find menus by dish name {}", dishName);
+        return menuService.findMenusByDishName(dishName);
     }
 }

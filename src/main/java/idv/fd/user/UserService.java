@@ -1,7 +1,8 @@
 package idv.fd.user;
 
-import idv.fd.user.model.User;
+import idv.fd.error.AppException;
 import idv.fd.user.dto.EditUser;
+import idv.fd.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,14 +26,30 @@ public class UserService {
         return userRepository.findAll(pr);
     }
 
+    public User findUserById(Long id) {
+
+        Optional<User> optUser = userRepository.findById(id);
+        if (optUser.isEmpty()) {
+            throw AppException.badRequest(String.format("user %d not found", id));
+        }
+        return optUser.get();
+    }
+
+    @Transactional
+    public User findUserByIdLocked(Long id) {
+
+        // use queryById with pessimistic lock
+        Optional<User> optUser = userRepository.queryById(id);
+        if (optUser.isEmpty()) {
+            throw AppException.badRequest(String.format("user %d not found", id));
+        }
+        return optUser.get();
+    }
+
     @Transactional
     public User updateUser(EditUser editUser) {
 
-        Optional<User> optUser = userRepository.findById(editUser.getUserId());
-        if (optUser.isEmpty()) {
-            throw new RuntimeException("user not found: " + editUser.getUserId());
-        }
-        User user = optUser.get();
+        User user = findUserByIdLocked(editUser.getUserId());
 
         user.setName(editUser.getUserName());
         return user;

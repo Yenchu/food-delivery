@@ -30,6 +30,7 @@ public class OpenHoursService {
             return openHoursRepository.findByDayOfWeekAndOpenTimeLessThanEqualAndClosedTimeGreaterThan(dayOfWeek, time, time);
         } else {
             return openHoursRepository.findByOpenTimeLessThanEqualAndClosedTimeGreaterThan(time, time);
+            //return openHoursRepository.findByOpenTimeLessThanEqualAndClosedTimeGreaterThan(time);
         }
     }
 

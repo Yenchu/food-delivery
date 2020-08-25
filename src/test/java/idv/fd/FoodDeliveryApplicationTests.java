@@ -3,13 +3,18 @@ package idv.fd;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import idv.fd.etl.*;
-import idv.fd.restaurant.*;
-import idv.fd.restaurant.dto.DishNumb;
-import idv.fd.restaurant.model.Restaurant;
-import idv.fd.user.model.Favourite;
-import idv.fd.user.FavouriteRepository;
+import idv.fd.etl.DbDataCreator;
+import idv.fd.etl.DbDataLoader;
+import idv.fd.etl.OpenHoursDataParser;
+import idv.fd.etl.RawDataParser;
+import idv.fd.etl.dto.RestaurantVo;
+import idv.fd.etl.dto.UserVo;
 import idv.fd.purchase.model.PurchaseHistory;
+import idv.fd.restaurant.OpenHoursRepository;
+import idv.fd.restaurant.RestaurantRepository;
+import idv.fd.restaurant.model.Restaurant;
+import idv.fd.user.FavouriteRepository;
+import idv.fd.user.model.Favourite;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,9 +34,6 @@ class FoodDeliveryApplicationTests {
 
     @Autowired
     private OpenHoursRepository openHoursRepository;
-
-    @Autowired
-    private MenuRepository menuRepository;
 
     @Autowired
     private FavouriteRepository favouriteRepository;
@@ -104,26 +106,18 @@ class FoodDeliveryApplicationTests {
     void parseOpenHoursData() {
 
         String line = "\"Plumed Horse\",\"Mon 11:45 am - 9:15 pm / Tues 7:45 am - 12:30 pm / Weds - Thurs, Sun 7:45 am - 3:45 pm / Fri 7 am - 3:45 am / Sat 6 am - 3:30 pm\"";
-        Mono<Restaurant> res = openHoursDataParser.parseLine(line);
+        Mono<Restaurant> rs = openHoursDataParser.parseLine(line);
 
         line = "\"Sudachi\",\"Mon-Wed 5 pm - 12:30 am  / Thu-Fri 5 pm - 1:30 am  / Sat 3 pm - 1:30 am  / Sun 3 pm - 11:30 pm\"";
-        res.mergeWith(openHoursDataParser.parseLine(line))
+        rs.mergeWith(openHoursDataParser.parseLine(line))
                 .toIterable()
                 .forEach(re -> System.out.println(re.getOpenHours()));
     }
-
 
     @Test
     public void findFavourites() {
 
         List<Favourite> fs = favouriteRepository.findAll();
         fs.forEach(System.out::println);
-    }
-
-    @Test
-    public void findDishesCount() {
-
-        List<DishNumb> dcs = menuRepository.findByDishesGreaterThan(13);
-        dcs.stream().map(dc -> TestUtil.toJson(objectMapper, dc)).forEach(System.out::println);
     }
 }

@@ -1,6 +1,7 @@
 package idv.fd.web;
 
 import idv.fd.error.AppError;
+import idv.fd.error.AppException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -33,18 +34,42 @@ public class WebControllerAdvice
         return HttpStatus.valueOf(statusCode);
     }
 
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<?> appException(AppException e, HttpServletRequest request) {
+
+        log.error(e.getMessage());
+        HttpStatus status;
+        AppError body;
+
+        if (e.getError() != null) {
+            AppError error = e.getError();
+
+            status = error.getStatus() != null ? HttpStatus.resolve(error.getStatus()) : getStatus(request);
+
+            body = error;
+        } else {
+            status = getStatus(request);
+
+            body = AppError.builder()
+                    .status(status.value())
+                    .msg(status.getReasonPhrase())
+                    .build();
+        }
+        return new ResponseEntity<>(body, new HttpHeaders(), status);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> exception(Exception e, HttpServletRequest request) {
 
         log.error(e.getMessage(), e);
         HttpStatus status = getStatus(request);
 
-        AppError respBody = AppError.builder()
+        AppError body = AppError.builder()
                 .status(status.value())
                 .msg(status.getReasonPhrase())
                 .build();
 
-        return new ResponseEntity<>(respBody, new HttpHeaders(), status);
+        return new ResponseEntity<>(body, new HttpHeaders(), status);
     }
 
     @Override

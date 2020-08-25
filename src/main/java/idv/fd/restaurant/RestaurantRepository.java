@@ -12,9 +12,8 @@ import java.util.Optional;
 
 public interface RestaurantRepository extends JpaRepository<Restaurant, Long> {
 
-    @Override
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Optional<Restaurant> findById(Long id);
+    Optional<Restaurant> queryById(Long id);
 
     //List<Restaurant> findByNameContainingOrderByName(String name);
 
