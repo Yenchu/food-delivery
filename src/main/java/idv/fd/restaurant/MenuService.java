@@ -57,13 +57,13 @@ public class MenuService {
 
     public List<DishInfo> findMenusWithinPrices(BigDecimal minPrice, BigDecimal maxPrice) {
 
-        return findMenusWithinPrices(minPrice, maxPrice, null);
+        return findMenusWithinPrices(minPrice, maxPrice, true);
     }
 
-    public List<DishInfo> findMenusWithinPrices(BigDecimal minPrice, BigDecimal maxPrice, String sortField) {
+    public List<DishInfo> findMenusWithinPrices(BigDecimal minPrice, BigDecimal maxPrice, boolean sortByPrice) {
 
-        // sort fields are database column name
-        sortField = "dish_name".equalsIgnoreCase(sortField) ? "dish_name" : "price";
+        // use native sql to sort, so fields need to be database column name
+        String sortField = sortByPrice ? "dish_name" : "price";
 
         return menuRepository.findByPriceGreaterThanEqualAndPriceLessThanEqual(minPrice, maxPrice, sortField);
     }

@@ -7,7 +7,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
-import java.time.OffsetTime;
 import java.util.List;
 
 @Service
@@ -25,15 +24,16 @@ public class OpenHoursService {
         return openHoursRepository.findAll(pr);
     }
 
-    public List<OpenHours> findOpenHoursByTime(Integer dayOfWeek, LocalTime localTime) {
+    public List<OpenHours> findOpenHoursByTime(LocalTime localTime) {
 
         int time = OpenHours.parseTime(localTime);
-        if (dayOfWeek != null) {
-            return openHoursRepository.findByDayOfWeekAndOpenTimeLessThanEqualAndClosedTimeGreaterThan(dayOfWeek, time, time);
-        } else {
-            return openHoursRepository.findByOpenTimeLessThanEqualAndClosedTimeGreaterThan(time, time);
-            //return openHoursRepository.findByOpenTimeLessThanEqualAndClosedTimeGreaterThan(time);
-        }
+        return openHoursRepository.findByOpenTimeLessThanEqualAndClosedTimeGreaterThan(time, time);
+    }
+
+    public List<OpenHours> findOpenHoursByTime(int dayOfWeek, LocalTime localTime) {
+
+        int time = OpenHours.parseTime(localTime);
+        return openHoursRepository.findByDayOfWeekAndOpenTimeLessThanEqualAndClosedTimeGreaterThan(dayOfWeek, time, time);
     }
 
     public List<OpenHours> findOpenHoursByRestaurant(Long restaurantId) {

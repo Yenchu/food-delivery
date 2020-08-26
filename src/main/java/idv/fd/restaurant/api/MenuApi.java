@@ -51,7 +51,7 @@ public interface MenuApi {
     List<DishInfo> findMenusWithinPrices(
             @Parameter(name = "maxPrice", description = "Max dish price (min = 1.0)") @Min(1) BigDecimal maxPrice,
             @Parameter(name = "minPrice", description = "Min dish price") BigDecimal minPrice,
-            @Parameter(name = "sort", description = "Sorted field, by price or dish name") String sortField);
+            @Parameter(name = "sortByPrice", description = "Sorted by price or dish name") boolean sortByPrice);
 
 
     @Operation(summary = "Search dishes by dish name", tags = {"Menu"})

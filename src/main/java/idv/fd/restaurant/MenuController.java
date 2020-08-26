@@ -42,17 +42,17 @@ public class MenuController implements MenuApi {
      *
      * @param maxPrice
      * @param minPrice
-     * @param sortField
+     * @param sortByPrice
      * @return
      */
     @GetMapping("/menus/findByPrice")
     public List<DishInfo> findMenusWithinPrices(
             @RequestParam(name = "maxPrice") @Min(1) BigDecimal maxPrice,
             @RequestParam(name = "minPrice", required = false, defaultValue = "0") BigDecimal minPrice,
-            @RequestParam(name = "sort", required = false) String sortField) {
+            @RequestParam(name = "sortByPrice", required = false, defaultValue = "true") boolean sortByPrice) {
 
-        log.debug("find menus within maxPrice {} minPrice {} sortField {}", maxPrice, minPrice, sortField);
-        return menuService.findMenusWithinPrices(minPrice, maxPrice, sortField);
+        log.debug("find menus within maxPrice {} minPrice {} sortByPrice {}", maxPrice, minPrice, sortByPrice);
+        return menuService.findMenusWithinPrices(minPrice, maxPrice, sortByPrice);
     }
 
     /**

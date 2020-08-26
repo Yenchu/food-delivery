@@ -16,13 +16,11 @@ import java.time.LocalTime;
 @Builder
 public class OpenHours {
 
+    public static final String MIDNIGHT = "00:00";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-//    @ManyToOne
-//    @JoinColumn(name = "restaurant_id", nullable = false)
-//    private Restaurant restaurant;
 
     private Long restaurantId;
 
@@ -31,12 +29,8 @@ public class OpenHours {
 
     private int dayOfWeek;
 
-    //    @JsonFormat(pattern = "HH:mm")
-//    private LocalTime openTime;
-//
-//    @JsonFormat(pattern = "HH:mm")
-//    private LocalTime closedTime;
     private int openTime;
+
     private int closedTime;
 
     private int openPeriod; // minutes
@@ -55,14 +49,15 @@ public class OpenHours {
 
     public String getOpenHour() {
 
-        StringBuilder s = new StringBuilder();
-        return s.append(openTime).insert(s.length() - 2, ':').toString();
+        if (openTime == 0) {
+            return MIDNIGHT;
+        }
+        return toTimeStr(openTime);
     }
 
     public String getClosedHour() {
 
-        StringBuilder s = new StringBuilder();
-        return s.append(closedTime).insert(s.length() - 2, ':').toString();
+        return toTimeStr(closedTime);
     }
 
     public void setOpenTime(LocalTime time) {
@@ -75,18 +70,31 @@ public class OpenHours {
         this.closedTime = parseTime(time);
     }
 
+    public static String toTimeStr(int time) {
+
+        StringBuilder s = new StringBuilder();
+        s.append(time).insert(s.length() - 2, ':');
+        if (s.length() < 5) {
+            s.insert(0, '0');
+        }
+        return s.toString();
+    }
+
+    public static int toTimeInt(String time) {
+
+        String[] hm = time.split(":");
+        if (hm.length != 2) {
+            throw new IllegalArgumentException("time format should be HH:mm but got " + time);
+        }
+
+        int h = Integer.parseInt(hm[0]);
+        int m = Integer.parseInt(hm[1]);
+        return h * 100 + m;
+    }
+
     public static int parseTime(LocalTime time) {
 
         return time.getHour() * 100 + time.getMinute();
-        //return OffsetTime.of(time, ZoneOffset.UTC);
-    }
-
-    public static LocalTime parseLocalTime(int time) {
-
-        String s = Integer.toString(time);
-        int h = Integer.parseInt(s.substring(0, s.length() - 2));
-        int m = Integer.parseInt(s.substring(s.length() - 2));
-        return LocalTime.of(h, m);
     }
 
     public static LocalTime parseLocalTime(String time) {

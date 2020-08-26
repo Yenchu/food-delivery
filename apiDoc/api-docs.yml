@@ -42,8 +42,8 @@ paths:
               $ref: '#/components/schemas/Purchase'
         required: true
       responses:
-        "400":
-          description: Bad request
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -54,8 +54,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PurchaseHistory'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad request
           content:
             application/json:
               schema:
@@ -92,8 +92,8 @@ paths:
           type: string
           format: date
       responses:
-        "400":
-          description: Bad request
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -106,8 +106,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserTxAmount'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad request
           content:
             application/json:
               schema:
@@ -135,6 +135,12 @@ paths:
           type: string
           format: date
       responses:
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
         "400":
           description: Bad request
           content:
@@ -149,12 +155,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TxNumbAmount'
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
   /transactions/max-restaurants:
     get:
       tags:
@@ -172,12 +172,6 @@ paths:
           type: boolean
           default: false
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -192,6 +186,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RestaurantTxAmount'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
   /transactions/user-count:
     get:
       tags:
@@ -229,8 +229,8 @@ paths:
           type: boolean
           default: false
       responses:
-        "400":
-          description: Bad request
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -241,8 +241,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Count'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad request
           content:
             application/json:
               schema:
@@ -260,8 +260,8 @@ paths:
               $ref: '#/components/schemas/EditMenu'
         required: true
       responses:
-        "400":
-          description: Bad request
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -272,8 +272,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Menu'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad request
           content:
             application/json:
               schema:
@@ -300,15 +300,16 @@ paths:
         schema:
           type: number
           default: 0
-      - name: sort
+      - name: sortByPrice
         in: query
-        description: "Sorted field, by price or dish name"
+        description: Sorted by price or dish name
         required: false
         schema:
-          type: string
+          type: boolean
+          default: true
       responses:
-        "400":
-          description: Bad request
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -321,8 +322,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Menu'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad request
           content:
             application/json:
               schema:
@@ -341,8 +342,8 @@ paths:
         schema:
           type: string
       responses:
-        "400":
-          description: Bad request
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -355,8 +356,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Menu'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad request
           content:
             application/json:
               schema:
@@ -385,12 +386,6 @@ paths:
           format: int32
           default: 10
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -405,6 +400,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/OpenHours'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
   /open-hours/findByTime:
     get:
       tags:
@@ -428,12 +429,6 @@ paths:
           type: integer
           format: int32
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -448,6 +443,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/OpenHours'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
   /open-hours/findByRestaurant:
     get:
       tags:
@@ -463,12 +464,6 @@ paths:
           type: integer
           format: int64
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -483,6 +478,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/OpenHours'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
   /restaurants:
     get:
       tags:
@@ -507,8 +508,8 @@ paths:
           format: int32
           default: 10
       responses:
-        "400":
-          description: Bad request
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -521,8 +522,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Restaurant'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad request
           content:
             application/json:
               schema:
@@ -539,8 +540,8 @@ paths:
               $ref: '#/components/schemas/EditRestaurant'
         required: true
       responses:
-        "400":
-          description: Bad request
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -551,8 +552,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Restaurant'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad request
           content:
             application/json:
               schema:
@@ -581,12 +582,6 @@ paths:
           type: integer
           format: int32
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -601,6 +596,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RestaurantInfo'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
   /restaurants/findByOpenHours:
     get:
       tags:
@@ -632,12 +633,6 @@ paths:
           type: boolean
           default: false
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -652,6 +647,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RestaurantInfo'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
   /restaurants/findByDishNumb:
     get:
       tags:
@@ -689,12 +690,6 @@ paths:
         schema:
           type: number
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -709,6 +704,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RestaurantInfo'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
   /restaurants/findByName:
     get:
       tags:
@@ -723,12 +724,6 @@ paths:
         schema:
           type: string
       responses:
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -743,6 +738,12 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RestaurantInfo'
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
   /favourites:
     get:
       tags:
@@ -820,8 +821,8 @@ paths:
           format: int32
           default: 10
       responses:
-        "400":
-          description: Bad request
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -834,8 +835,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad request
           content:
             application/json:
               schema:
@@ -852,8 +853,8 @@ paths:
               $ref: '#/components/schemas/EditUser'
         required: true
       responses:
-        "400":
-          description: Bad request
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -864,8 +865,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-        "500":
-          description: Internal server error
+        "400":
+          description: Bad request
           content:
             application/json:
               schema:
@@ -921,11 +922,11 @@ components:
     UserTxAmount:
       type: object
       properties:
-        userName:
-          type: string
         userId:
           type: integer
           format: int64
+        userName:
+          type: string
         txAmount:
           type: number
     TxNumbAmount:
@@ -1037,15 +1038,6 @@ components:
           format: int64
         restaurantName:
           type: string
-    AddFavourite:
-      type: object
-      properties:
-        userId:
-          type: integer
-          format: int64
-        restaurantId:
-          type: integer
-          format: int64
     Favourite:
       type: object
       properties:
@@ -1057,6 +1049,15 @@ components:
           format: int64
         restaurant:
           $ref: '#/components/schemas/Restaurant'
+    AddFavourite:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
+        restaurantId:
+          type: integer
+          format: int64
     User:
       type: object
       properties:

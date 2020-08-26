@@ -61,7 +61,6 @@ public class OpenHoursDataParser {
 
             Restaurant restaurant = new Restaurant();
             restaurant.setName(restaurantName);
-            //restaurant.addOpenHours(openHours);
             return Tuples.of(restaurant, openHours);
         } else {
             log.warn("unrecognised line format: {}", line);
@@ -238,8 +237,6 @@ public class OpenHoursDataParser {
 
         OpenHours oh = OpenHours.builder()
                 .dayOfWeek(day)
-                //.openTime(openTime)
-                //.closedTime(closedTime)
                 .openPeriod(openPeriod)
                 .build();
 

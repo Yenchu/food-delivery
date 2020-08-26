@@ -43,11 +43,15 @@ public class OpenHoursTests {
     @Test
     public void findOpenHoursByTime() {
 
-        final LocalTime time = OpenHours.parseLocalTime("6:00");
+        String timeStr = "6:00";
+        final LocalTime time = OpenHours.parseLocalTime(timeStr);
+        System.out.println("time: " + time.toString());
 
-        List<OpenHours> ohs = openHoursService.findOpenHoursByTime(null, time);
-        ohs.stream().limit(10).forEach(System.out::println);
+        List<OpenHours> ohs = openHoursService.findOpenHoursByTime(time);
+        ohs.stream().limit(10).map(oh -> TestUtil.toJson(objectMapper, oh)).forEach(System.out::println);
 
+        //assertThat(ohs.get(0).getOpenHour().compareTo(time.toString())).isLessThanOrEqualTo(0);
+        //assertThat(ohs.get(0).getClosedHour().compareTo(time.toString())).isGreaterThan(0);
         assertThat(ohs).allMatch(oh -> oh.getOpenHour().compareTo(time.toString()) <= 0 && oh.getClosedHour().compareTo(time.toString()) > 0);
     }
 
