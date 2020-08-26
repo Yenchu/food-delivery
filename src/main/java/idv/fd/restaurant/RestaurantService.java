@@ -5,7 +5,9 @@ import idv.fd.restaurant.dto.EditRestaurant;
 import idv.fd.restaurant.dto.QryDishNumb;
 import idv.fd.restaurant.dto.QryOpenPeriod;
 import idv.fd.restaurant.dto.RestaurantInfo;
+import idv.fd.restaurant.model.OpenHours;
 import idv.fd.restaurant.model.Restaurant;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -14,10 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
+import java.time.OffsetTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class RestaurantService {
 
     private RestaurantRepository restaurantRepository;
@@ -72,13 +76,15 @@ public class RestaurantService {
         return restaurantRepository.findByNameContainingOrderByName(name);
     }
 
-    public List<RestaurantInfo> findRestaurantsByTime(LocalTime time) {
+    public List<RestaurantInfo> findRestaurantsByTime(LocalTime localTime) {
 
+        int time = OpenHours.parseTime(localTime);
         return openHoursRepository.findRestaurantsByTime(time);
     }
 
-    public List<RestaurantInfo> findRestaurantsByTime(int dayOfWeek, LocalTime time) {
+    public List<RestaurantInfo> findRestaurantsByTime(int dayOfWeek, LocalTime localTime) {
 
+        int time = OpenHours.parseTime(localTime);
         return openHoursRepository.findRestaurantsByDayAndTime(dayOfWeek, time);
     }
 

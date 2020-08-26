@@ -58,7 +58,7 @@ public class RestaurantController implements RestaurantApi {
             @RequestParam(name = "dayOfWeek", required = false) @Min(0) @Max(6) Integer dayOfWeek) {
 
         log.debug("find restaurants by time {} dayOfWeek {}", timeStr, dayOfWeek);
-        LocalTime openTime = OpenHours.parseTime(timeStr);
+        LocalTime openTime = OpenHours.parseLocalTime(timeStr);
 
         if (dayOfWeek != null) {
             return restaurantService.findRestaurantsByTime(dayOfWeek, openTime);
@@ -77,7 +77,7 @@ public class RestaurantController implements RestaurantApi {
      */
     @GetMapping("/restaurants/findByOpenHours")
     public List<? extends RestaurantInfo> findRestaurantsByOpenPeriod(
-            @RequestParam(name = "openHours") @Min(1) @Max(24) int openHours,
+            @RequestParam(name = "openHours") @Min(1) int openHours,
             @RequestParam(name = "lessThan", required = false, defaultValue = "false") boolean lessThan,
             @RequestParam(name = "perWeek", required = false, defaultValue = "false") boolean perWeek) {
 

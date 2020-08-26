@@ -34,7 +34,7 @@ public class RestaurantTests {
     @Test
     public void findRestaurantsByTime() {
 
-        LocalTime time = OpenHours.parseTime("09:00");
+        LocalTime time = OpenHours.parseLocalTime("09:00");
 
         List<RestaurantInfo> rs = restaurantService.findRestaurantsByTime(time);
 

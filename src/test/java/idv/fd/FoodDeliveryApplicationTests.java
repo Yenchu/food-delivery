@@ -1,39 +1,25 @@
 package idv.fd;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import idv.fd.etl.DbDataCreator;
-import idv.fd.etl.DbDataLoader;
-import idv.fd.etl.OpenHoursDataParser;
-import idv.fd.etl.RawDataParser;
+import idv.fd.etl.*;
 import idv.fd.etl.dto.RestaurantVo;
 import idv.fd.etl.dto.UserVo;
-import idv.fd.purchase.model.PurchaseHistory;
-import idv.fd.restaurant.OpenHoursRepository;
-import idv.fd.restaurant.RestaurantRepository;
+import idv.fd.restaurant.model.OpenHours;
 import idv.fd.restaurant.model.Restaurant;
 import idv.fd.user.FavouriteRepository;
 import idv.fd.user.model.Favourite;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @SpringBootTest
 class FoodDeliveryApplicationTests {
-
-    @Autowired
-    private RestaurantRepository restaurantRepository;
-
-    @Autowired
-    private OpenHoursRepository openHoursRepository;
 
     @Autowired
     private FavouriteRepository favouriteRepository;
@@ -42,13 +28,16 @@ class FoodDeliveryApplicationTests {
     private OpenHoursDataParser openHoursDataParser;
 
     @Autowired
-    private RawDataParser rawDataParser;
+    private RawDataExtractor rawDataExtractor;
 
     @Autowired
-    private DbDataCreator dbDataCreator;
+    private RawDataTransformer rawDataTransformer;
 
     @Autowired
     private DbDataLoader dbDataLoader;
+
+    @Autowired
+    private DbDataCreator dbDataCreator;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -63,42 +52,22 @@ class FoodDeliveryApplicationTests {
 
         List<RestaurantVo> vos = objectMapper.readValue(new File(filePath), typeRef);
 
-
-        List<Restaurant> rs = vos.stream().map(dbDataCreator::toRestaurant).collect(Collectors.toList());
-
-        restaurantRepository.saveAll(rs);
-
-        openHoursRepository.findAll().forEach(System.out::println);
+        vos.stream().map(rawDataTransformer::transformRestaurantData)
+                .map(dbDataLoader::loadRestaurantData)
+                .forEach(System.out::println);
     }
 
     @Test
-    public void convert() throws JsonProcessingException {
+    public void extractRestaurantData() {
 
-        UserVo.PurchaseHistoryVo vo = UserVo.PurchaseHistoryVo.builder()
-                .transactionAmount(11.5)
-                .transactionDate("12/02/2018 06:15 PM")
-                .build();
-
-        PurchaseHistory ph = PurchaseHistory.builder()
-                .transactionAmount(BigDecimal.valueOf(vo.getTransactionAmount()))
-                .transactionDate(PurchaseHistory.parseTxDate(vo.getTransactionDate()))
-                .build();
-
-        System.out.println("ph: " + ph);
-        System.out.println("ph: " + objectMapper.writeValueAsString(ph));
-    }
-
-    @Test
-    public void parseRestaurantData() {
-
-        RestaurantVo vo = rawDataParser.parseRestaurantData().blockLast();
+        RestaurantVo vo = rawDataExtractor.extractRestaurantData().blockLast();
         System.out.println("last restaurant data: " + vo);
     }
 
     @Test
-    public void parseUserData() {
+    public void extractUserData() {
 
-        UserVo vo = rawDataParser.parseUserData().blockLast();
+        UserVo vo = rawDataExtractor.extractUserData().blockLast();
         System.out.println("last user data: " + vo);
     }
 
@@ -106,12 +75,12 @@ class FoodDeliveryApplicationTests {
     void parseOpenHoursData() {
 
         String line = "\"Plumed Horse\",\"Mon 11:45 am - 9:15 pm / Tues 7:45 am - 12:30 pm / Weds - Thurs, Sun 7:45 am - 3:45 pm / Fri 7 am - 3:45 am / Sat 6 am - 3:30 pm\"";
-        Mono<Restaurant> rs = openHoursDataParser.parseLine(line);
+        Tuple2<Restaurant, List<OpenHours>> tp = openHoursDataParser.parseLine(line);
+        System.out.println(tp);
 
         line = "\"Sudachi\",\"Mon-Wed 5 pm - 12:30 am  / Thu-Fri 5 pm - 1:30 am  / Sat 3 pm - 1:30 am  / Sun 3 pm - 11:30 pm\"";
-        rs.mergeWith(openHoursDataParser.parseLine(line))
-                .toIterable()
-                .forEach(re -> System.out.println(re.getOpenHours()));
+        tp = openHoursDataParser.parseLine(line);
+        System.out.println(tp);
     }
 
     @Test

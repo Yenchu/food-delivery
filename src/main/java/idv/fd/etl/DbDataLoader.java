@@ -1,19 +1,22 @@
 package idv.fd.etl;
 
 import idv.fd.etl.dto.RestaurantMenus;
-import idv.fd.restaurant.model.Menu;
-import idv.fd.restaurant.MenuRepository;
-import idv.fd.restaurant.model.Restaurant;
-import idv.fd.restaurant.RestaurantRepository;
-import idv.fd.purchase.model.PurchaseHistory;
 import idv.fd.purchase.PurchaseHistoryRepository;
-import idv.fd.user.model.User;
+import idv.fd.purchase.model.PurchaseHistory;
+import idv.fd.restaurant.MenuRepository;
+import idv.fd.restaurant.OpenHoursRepository;
+import idv.fd.restaurant.RestaurantRepository;
+import idv.fd.restaurant.model.Menu;
+import idv.fd.restaurant.model.OpenHours;
+import idv.fd.restaurant.model.Restaurant;
 import idv.fd.user.UserRepository;
+import idv.fd.user.model.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
+import org.springframework.transaction.annotation.Transactional;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuple3;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,61 +24,65 @@ import java.util.Map;
 @Slf4j
 public class DbDataLoader {
 
-    private DbDataCreator dbDataCreator;
-
     private RestaurantRepository restaurantRepository;
 
     private MenuRepository menuRepository;
+
+    private OpenHoursRepository openHoursRepository;
 
     private UserRepository userRepository;
 
     private PurchaseHistoryRepository purchaseHistoryRepository;
 
-    public DbDataLoader(DbDataCreator dbDataCreator, RestaurantRepository restaurantRepository, MenuRepository menuRepository, UserRepository userRepository, PurchaseHistoryRepository purchaseHistoryRepository) {
-        this.dbDataCreator = dbDataCreator;
+    public DbDataLoader(RestaurantRepository restaurantRepository, MenuRepository menuRepository, OpenHoursRepository openHoursRepository, UserRepository userRepository, PurchaseHistoryRepository purchaseHistoryRepository) {
         this.restaurantRepository = restaurantRepository;
         this.menuRepository = menuRepository;
+        this.openHoursRepository = openHoursRepository;
         this.userRepository = userRepository;
         this.purchaseHistoryRepository = purchaseHistoryRepository;
     }
 
-    public Flux<Restaurant> loadRestaurantData() {
+    @Transactional
+    public Restaurant loadRestaurantData(Tuple3<Restaurant, List<Menu>, List<OpenHours>> tuple) {
 
-        if (restaurantRepository.findAll().size() > 0) {
-            throw new RuntimeException("there are still restaurant data in database, please clean it first!");
+        Restaurant restaurant = tuple.getT1();
+        List<Menu> menus = tuple.getT2();
+        List<OpenHours> ohs = tuple.getT3();
+
+        restaurant = restaurantRepository.save(restaurant);
+
+        Long restaurantId = restaurant.getId();
+
+        for (Menu m : menus) {
+            m.setRestaurantId(restaurantId);
         }
+        menuRepository.saveAll(menus);
 
-        return dbDataCreator.createRestaurants()
-                .buffer(100)
-                .map(restaurantRepository::saveAll)
-                .flatMap(Flux::fromIterable);
+        for (OpenHours oh : ohs) {
+            oh.setRestaurantId(restaurantId);
+        }
+        openHoursRepository.saveAll(ohs);
+        return restaurant;
     }
 
-    public Flux<User> loadUserData() {
+    @Transactional
+    public User loadUserData(Tuple2<User, List<PurchaseHistory>> tuple, Map<String, RestaurantMenus> restMenusMap) {
 
-        if (userRepository.findAll().size() > 0) {
-            throw new RuntimeException("there are still user data in database, please clean it first!");
-        }
+        User user = tuple.getT1();
+        List<PurchaseHistory> phs = tuple.getT2();
 
-        Map<String, RestaurantMenus> restMenusMap = getRestaurantMenus();
+        user = userRepository.save(user);
 
-        return dbDataCreator.createUserPurchaseHistories()
-                .map(tuple -> {
-                    User user = tuple.getT1();
-                    List<PurchaseHistory> phs = tuple.getT2();
+        updatePurchaseHistory(restMenusMap, user, phs);
 
-                    user = userRepository.save(user);
-
-                    updatePurchaseHistory(restMenusMap, user, phs);
-
-                    purchaseHistoryRepository.saveAll(phs);
-                    return user;
-                });
+        purchaseHistoryRepository.saveAll(phs);
+        return user;
     }
 
     protected void updatePurchaseHistory(Map<String, RestaurantMenus> restMenusMap, User user, List<PurchaseHistory> phs) {
 
         for (PurchaseHistory ph : phs) {
+
             ph.setUserId(user.getId());
 
             RestaurantMenus restMenus = restMenusMap.get(ph.getRestaurantName());
@@ -94,39 +101,5 @@ public class DbDataLoader {
 
             ph.setMenuId(menuId);
         }
-    }
-
-    protected Map<String, RestaurantMenus> getRestaurantMenus() {
-
-        Map<String, RestaurantMenus> restMenusMap = new HashMap<>();
-
-        List<Menu> menus = menuRepository.findAll();
-
-        for (Menu menu : menus) {
-            Restaurant rest = menu.getRestaurant();
-
-            RestaurantMenus restMenus = restMenusMap.get(rest.getName());
-            if (restMenus != null) {
-
-                Map<String, Long> menusMap = restMenus.getMenus();
-
-                if (menusMap.containsKey(menu.getDishName())) {
-                    log.error("dish name duplicated: {}", menu);
-                }
-                menusMap.put(menu.getDishName(), menu.getId());
-
-            } else {
-                Map<String, Long> menusMap = new HashMap<>();
-                menusMap.put(menu.getDishName(), menu.getId());
-
-                restMenus = RestaurantMenus.builder()
-                        .id(rest.getId())
-                        .menus(menusMap)
-                        .build();
-
-                restMenusMap.put(rest.getName(), restMenus);
-            }
-        }
-        return restMenusMap;
     }
 }

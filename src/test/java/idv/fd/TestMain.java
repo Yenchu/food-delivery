@@ -1,27 +1,32 @@
 package idv.fd;
 
-import idv.fd.restaurant.model.OpenHours;
 import idv.fd.etl.OpenHoursDataParser;
+import idv.fd.restaurant.model.OpenHours;
+import idv.fd.restaurant.model.Restaurant;
+import reactor.util.function.Tuple2;
 
-import java.time.*;
+import java.time.LocalTime;
+import java.time.OffsetTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
 
 public class TestMain {
 
     public static void main(String[] args) {
 
         //parseLine();
-        //parseTime();
+        parseTime();
 
     }
 
     static void parseTime() {
 
-        LocalTime lt = OpenHours.parseTime("5:00");
-        System.out.println("time: " + lt);
-        lt = OpenHours.parseTime("15:59");
-        System.out.println("time: " + lt);
+        OpenHours oh = OpenHours.builder().build();
+        oh.setOpenTime(LocalTime.of(2, 5));
+        oh.setClosedTime(LocalTime.of(19, 50));
+        System.out.println("oh: " + oh);
+        System.out.println("open: " + oh.getOpenHour() + "  closed: " + oh.getClosedHour());
     }
 
     static void parseLine() {
@@ -37,7 +42,8 @@ public class TestMain {
         OpenHoursDataParser parser = new OpenHoursDataParser();
 
         Arrays.stream(lines).forEach(line -> {
-            parser.parseLine(line).subscribe(re -> System.out.println(re.getOpenHours()));
+            Tuple2<Restaurant, List<OpenHours>> tp = parser.parseLine(line);
+            System.out.println(tp.getT2());
         });
     }
 

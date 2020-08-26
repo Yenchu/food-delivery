@@ -5,7 +5,8 @@ import idv.fd.restaurant.model.Restaurant;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,17 +42,15 @@ public class OpenHoursDataParser {
     private String regex4OpenHours = "(.*?)(\\d{1,2}):?(\\d{2})?([a|p]m)-(\\d{1,2}):?(\\d{2})?([a|p]m)";
     private Pattern pattern4OpenHours = Pattern.compile(regex4OpenHours);
 
-    public Flux<Restaurant> parseFile(String filePath) {
+    public Flux<Tuple2<Restaurant, List<OpenHours>>> parseFile(String filePath) {
 
         return Flux.using(() -> Files.lines(Path.of(filePath)),
                 Flux::fromStream,
                 BaseStream::close
-        ).flatMap(this::parseLine);
+        ).map(this::parseLine).filter(t -> t != null);
     }
 
-    public Mono<Restaurant> parseLine(String line) {
-
-        Restaurant restaurant = null;
+    public Tuple2<Restaurant, List<OpenHours>> parseLine(String line) {
 
         Matcher matcher = pattern4RestaurantNameAndOpenHours.matcher(line);
         if (matcher.find()) {
@@ -60,13 +59,14 @@ public class OpenHoursDataParser {
 
             List<OpenHours> openHours = parseOpenHours(openHoursStr);
 
-            restaurant = new Restaurant();
+            Restaurant restaurant = new Restaurant();
             restaurant.setName(restaurantName);
-            restaurant.addOpenHours(openHours);
+            //restaurant.addOpenHours(openHours);
+            return Tuples.of(restaurant, openHours);
         } else {
             log.warn("unrecognised line format: {}", line);
+            return null;
         }
-        return Mono.justOrEmpty(restaurant);
     }
 
     public List<OpenHours> parseOpenHours(String ohs) {
@@ -236,14 +236,16 @@ public class OpenHoursDataParser {
         }
         int openPeriod = (int) dur / 60;
 
-        return OpenHours.builder()
+        OpenHours oh = OpenHours.builder()
                 .dayOfWeek(day)
-                .openTime(openTime)
-                .closedTime(closedTime)
-                //.openTime(OffsetTime.of(openTime, ZoneOffset.UTC))
-                //.closedTime(OffsetTime.of(closedTime, ZoneOffset.UTC))
+                //.openTime(openTime)
+                //.closedTime(closedTime)
                 .openPeriod(openPeriod)
                 .build();
+
+        oh.setOpenTime(openTime);
+        oh.setClosedTime(closedTime);
+        return oh;
     }
 
     protected OpenHours createOvernightOpenHours(int day, LocalTime overnight) {

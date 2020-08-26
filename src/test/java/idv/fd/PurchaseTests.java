@@ -66,7 +66,7 @@ public class PurchaseTests {
         Menu menu = menuService.findMenuById(menuId);
         BigDecimal dishPrice = menu.getPrice();
 
-        Long restaurantId = menu.getRestaurant().getId();
+        Long restaurantId = menu.getRestaurantId();
         Restaurant rest = restaurantService.findRestaurantById(restaurantId);
         BigDecimal prevRestBalance = rest.getCashBalance();
         System.out.println(String.format("before userBalance=%f, restaurantBalance=%f dishPrice=%f",

@@ -15,6 +15,8 @@ public class RestaurantMenus {
 
     private Long id;
 
+    private String name;
+
     private Map<String, Long> menus;
 
 }

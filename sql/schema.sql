@@ -1,4 +1,4 @@
-CREATE DATABASE demo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- CREATE DATABASE demo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE `demo`;
 
@@ -20,11 +20,10 @@ CREATE TABLE `open_hours` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `restaurant_id` int(11) NOT NULL,
   `day_of_week` int(11),
-  `open_time` time,
-  `closed_time` time,
+  `open_time` int(11),
+  `closed_time` int(11),
   `open_period` int(11),
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`restaurant_id`) REFERENCES restaurant(`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE `menu` (
@@ -32,8 +31,7 @@ CREATE TABLE `menu` (
   `restaurant_id` int(11) NOT NULL,
   `dish_name` varchar(500) NOT NULL,
   `price` decimal(12, 2),
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`restaurant_id`) REFERENCES restaurant(`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE TABLE `user` (

@@ -19,7 +19,7 @@ import java.time.Duration;
 
 @Component
 @Slf4j
-public class RawDataParser {
+public class RawDataExtractor {
 
     private String restaurantDataUrl;
 
@@ -27,7 +27,7 @@ public class RawDataParser {
 
     private WebClient webClient;
 
-    public RawDataParser(
+    public RawDataExtractor(
             @Value("${RESTAURANT_DATA_URL}") String restaurantDataUrl,
             @Value("${USER_DATA_URL}") String userDataUrl,
             WebClient.Builder webClientBuilder) {
@@ -45,7 +45,7 @@ public class RawDataParser {
                 .build();
     }
 
-    public Flux<RestaurantVo> parseRestaurantData() {
+    public Flux<RestaurantVo> extractRestaurantData() {
 
         return webClient.get()
                 .uri(restaurantDataUrl)
@@ -58,7 +58,7 @@ public class RawDataParser {
                 .timeout(Duration.ofMillis(10000));
     }
 
-    public Flux<UserVo> parseUserData() {
+    public Flux<UserVo> extractUserData() {
 
         return webClient.get()
                 .uri(userDataUrl)

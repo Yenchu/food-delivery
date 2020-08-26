@@ -48,18 +48,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppError'
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/PurchaseHistory'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
   /transactions/top-users:
     get:
       tags:
@@ -92,6 +92,12 @@ paths:
           type: string
           format: date
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
         "200":
           description: Successful operation
           content:
@@ -100,12 +106,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/UserTxAmount'
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -135,6 +135,12 @@ paths:
           type: string
           format: date
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
         "200":
           description: Successful operation
           content:
@@ -143,12 +149,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/TxNumbAmount'
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -229,18 +229,18 @@ paths:
           type: boolean
           default: false
       responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Count'
         "400":
           description: Bad request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppError'
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Count'
         "500":
           description: Internal server error
           content:
@@ -260,18 +260,18 @@ paths:
               $ref: '#/components/schemas/EditMenu'
         required: true
       responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Menu'
         "400":
           description: Bad request
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppError'
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Menu'
         "500":
           description: Internal server error
           content:
@@ -307,6 +307,12 @@ paths:
         schema:
           type: string
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
         "200":
           description: Successful operation
           content:
@@ -315,12 +321,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Menu'
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -341,6 +341,12 @@ paths:
         schema:
           type: string
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
         "200":
           description: Successful operation
           content:
@@ -349,12 +355,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Menu'
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -385,14 +385,6 @@ paths:
           format: int32
           default: 10
       responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OpenHours'
         "400":
           description: Bad request
           content:
@@ -405,6 +397,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppError'
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OpenHours'
   /open-hours/findByTime:
     get:
       tags:
@@ -428,14 +428,6 @@ paths:
           type: integer
           format: int32
       responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OpenHours'
         "400":
           description: Bad request
           content:
@@ -448,6 +440,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppError'
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OpenHours'
   /open-hours/findByRestaurant:
     get:
       tags:
@@ -463,14 +463,6 @@ paths:
           type: integer
           format: int64
       responses:
-        "200":
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/OpenHours'
         "400":
           description: Bad request
           content:
@@ -483,6 +475,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppError'
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OpenHours'
   /restaurants:
     get:
       tags:
@@ -507,6 +507,12 @@ paths:
           format: int32
           default: 10
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
         "200":
           description: Successful operation
           content:
@@ -515,12 +521,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Restaurant'
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -545,18 +545,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppError'
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Restaurant'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
   /restaurants/findByTime:
     get:
       tags:
@@ -614,7 +614,6 @@ paths:
         description: "The specified open hours (min = 1, max = 24)"
         required: true
         schema:
-          maximum: 24
           minimum: 1
           type: integer
           format: int32
@@ -821,6 +820,12 @@ paths:
           format: int32
           default: 10
       responses:
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
         "200":
           description: Successful operation
           content:
@@ -829,12 +834,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "500":
           description: Internal server error
           content:
@@ -859,18 +858,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AppError'
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AppError'
         "200":
           description: Successful operation
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppError'
 components:
   schemas:
     Purchase:
@@ -932,24 +931,24 @@ components:
     TxNumbAmount:
       type: object
       properties:
+        txAmount:
+          type: number
         txNumb:
           type: integer
           format: int64
-        txAmount:
-          type: number
     RestaurantTxAmount:
       type: object
       properties:
-        restaurantName:
-          type: string
         restaurantId:
           type: integer
           format: int64
+        restaurantName:
+          type: string
+        txAmount:
+          type: number
         txNumb:
           type: integer
           format: int64
-        txAmount:
-          type: number
     Count:
       type: object
       properties:
@@ -978,12 +977,36 @@ components:
         id:
           type: integer
           format: int64
-        restaurant:
-          $ref: '#/components/schemas/Restaurant'
+        restaurantId:
+          type: integer
+          format: int64
+        restaurantName:
+          type: string
         dishName:
           type: string
         price:
           type: number
+    OpenHours:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        restaurantId:
+          type: integer
+          format: int64
+        restaurantName:
+          type: string
+        dayOfWeek:
+          type: integer
+          format: int32
+        openPeriod:
+          type: integer
+          format: int32
+        openHour:
+          type: string
+        closedHour:
+          type: string
     Restaurant:
       type: object
       properties:
@@ -994,39 +1017,6 @@ components:
           type: string
         cashBalance:
           type: number
-    LocalTime:
-      type: object
-      properties:
-        hour:
-          type: integer
-          format: int32
-        minute:
-          type: integer
-          format: int32
-        second:
-          type: integer
-          format: int32
-        nano:
-          type: integer
-          format: int32
-    OpenHours:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        restaurant:
-          $ref: '#/components/schemas/Restaurant'
-        dayOfWeek:
-          type: integer
-          format: int32
-        openTime:
-          $ref: '#/components/schemas/LocalTime'
-        closedTime:
-          $ref: '#/components/schemas/LocalTime'
-        openPeriod:
-          type: integer
-          format: int32
     EditRestaurant:
       required:
       - restaurantName
@@ -1042,8 +1032,17 @@ components:
     RestaurantInfo:
       type: object
       properties:
+        restaurantId:
+          type: integer
+          format: int64
         restaurantName:
           type: string
+    AddFavourite:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int64
         restaurantId:
           type: integer
           format: int64
@@ -1058,15 +1057,6 @@ components:
           format: int64
         restaurant:
           $ref: '#/components/schemas/Restaurant'
-    AddFavourite:
-      type: object
-      properties:
-        userId:
-          type: integer
-          format: int64
-        restaurantId:
-          type: integer
-          format: int64
     User:
       type: object
       properties:

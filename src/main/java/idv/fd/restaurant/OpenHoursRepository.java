@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalTime;
+import java.time.OffsetTime;
 import java.util.List;
 
 public interface OpenHoursRepository extends JpaRepository<OpenHours, Long> {
@@ -27,9 +28,9 @@ public interface OpenHoursRepository extends JpaRepository<OpenHours, Long> {
 
     List<OpenHours> findByRestaurantId(Long restaurantId);
 
-    List<OpenHours> findByOpenTimeLessThanEqualAndClosedTimeGreaterThan(LocalTime openTime, LocalTime closedTime);
+    List<OpenHours> findByOpenTimeLessThanEqualAndClosedTimeGreaterThan(int openTime, int closedTime);
 
-    List<OpenHours> findByDayOfWeekAndOpenTimeLessThanEqualAndClosedTimeGreaterThan(int dayOfWeek, LocalTime openTime, LocalTime closedTime);
+    List<OpenHours> findByDayOfWeekAndOpenTimeLessThanEqualAndClosedTimeGreaterThan(int dayOfWeek, int openTime, int closedTime);
 
 
 //    @Query(value = SELECT_OPEN_HOURS
@@ -40,13 +41,13 @@ public interface OpenHoursRepository extends JpaRepository<OpenHours, Long> {
     @Query(value = SELECT_RESTAURANT
             + " where o.open_time <= ?1 and o.closed_time > ?1"
             + " group by restaurantId", nativeQuery = true)
-    List<RestaurantInfo> findRestaurantsByTime(LocalTime time);
+    List<RestaurantInfo> findRestaurantsByTime(int time);
 
 
     @Query(value = SELECT_RESTAURANT
             + " where o.day_of_week = ?1 and o.open_time <= ?2 and o.closed_time > ?2"
             + " group by restaurantId", nativeQuery = true)
-    List<RestaurantInfo> findRestaurantsByDayAndTime(int dayOfWeek, LocalTime time);
+    List<RestaurantInfo> findRestaurantsByDayAndTime(int dayOfWeek, int time);
 
 
     @Query(value = SELECT_RESTAURANT

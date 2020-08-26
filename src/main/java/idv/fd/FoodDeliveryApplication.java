@@ -1,6 +1,6 @@
 package idv.fd;
 
-import idv.fd.etl.DbDataLoader;
+import idv.fd.etl.DbDataCreator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -25,7 +25,7 @@ public class FoodDeliveryApplication {
     private Integer loadDbData;
 
     @Bean
-    public CommandLineRunner loadData(ConfigurableApplicationContext ctx, DbDataLoader dbDataLoader) {
+    public CommandLineRunner createDbData(ConfigurableApplicationContext ctx, DbDataCreator dbDataCreator) {
 
         return (args) -> {
             if (loadDbData == null || loadDbData == 0) {
@@ -33,21 +33,21 @@ public class FoodDeliveryApplication {
             }
 
             if ((loadDbData & LOAD_RESTAURANT_DB_DATA) == LOAD_RESTAURANT_DB_DATA) {
-                log.info("---------- load restaurant data...");
+                log.info("---------- create restaurant data...");
                 long startTime = System.currentTimeMillis();
 
-                dbDataLoader.loadRestaurantData().blockLast();
+                dbDataCreator.createRestaurantData().blockLast();
 
-                log.info("---------- load restaurant data ended: {}ms", (System.currentTimeMillis() - startTime));
+                log.info("---------- create restaurant data ended: {}ms", (System.currentTimeMillis() - startTime));
             }
 
             if ((loadDbData & LOAD_USER_DB_DATA) == LOAD_USER_DB_DATA) {
-                log.info("---------- load user data...");
+                log.info("---------- create user data...");
                 long startTime = System.currentTimeMillis();
 
-                dbDataLoader.loadUserData().blockLast();
+                dbDataCreator.createUserData().blockLast();
 
-                log.info("---------- load user data ended: {}ms", (System.currentTimeMillis() - startTime));
+                log.info("---------- create user data ended: {}ms", (System.currentTimeMillis() - startTime));
             }
 
             log.info("shutdown app...");

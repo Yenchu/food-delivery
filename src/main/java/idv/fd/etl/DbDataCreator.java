@@ -1,94 +1,111 @@
 package idv.fd.etl;
 
-import idv.fd.etl.dto.RestaurantVo;
-import idv.fd.etl.dto.UserVo;
+import idv.fd.etl.dto.RestaurantMenus;
+import idv.fd.restaurant.MenuRepository;
+import idv.fd.restaurant.RestaurantRepository;
 import idv.fd.restaurant.model.Menu;
-import idv.fd.restaurant.model.OpenHours;
 import idv.fd.restaurant.model.Restaurant;
-import idv.fd.purchase.model.PurchaseHistory;
+import idv.fd.user.UserRepository;
 import idv.fd.user.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
-import reactor.util.function.Tuple2;
-import reactor.util.function.Tuples;
 
-import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
+@Slf4j
 public class DbDataCreator {
 
-    private RawDataParser rawDataParser;
+    private RawDataExtractor rawDataExtractor;
 
-    private OpenHoursDataParser openHoursDataParser;
+    private RawDataTransformer rawDataTransformer;
 
-    public DbDataCreator(RawDataParser rawDataParser, OpenHoursDataParser openHoursDataParser) {
-        this.rawDataParser = rawDataParser;
-        this.openHoursDataParser = openHoursDataParser;
+    private DbDataLoader dbDataLoader;
+
+    private RestaurantRepository restaurantRepository;
+
+    private MenuRepository menuRepository;
+
+    private UserRepository userRepository;
+
+    public DbDataCreator(RawDataExtractor rawDataExtractor, OpenHoursDataParser openHoursDataParser, RawDataTransformer rawDataTransformer, DbDataLoader dbDataLoader, RestaurantRepository restaurantRepository, MenuRepository menuRepository, UserRepository userRepository) {
+        this.rawDataExtractor = rawDataExtractor;
+        this.rawDataTransformer = rawDataTransformer;
+        this.dbDataLoader = dbDataLoader;
+        this.restaurantRepository = restaurantRepository;
+        this.menuRepository = menuRepository;
+        this.userRepository = userRepository;
     }
 
-    public Flux<Restaurant> createRestaurants() {
+    public Flux<Restaurant> createRestaurantData() {
 
-        return rawDataParser.parseRestaurantData()
-                .map(this::toRestaurant);
+        if (restaurantRepository.findAll().size() > 0) {
+            throw new RuntimeException("there are still restaurant data in database, please clean it first!");
+        }
+
+        return rawDataExtractor.extractRestaurantData()
+                .map(rawDataTransformer::transformRestaurantData)
+                .map(dbDataLoader::loadRestaurantData);
     }
 
-    public Flux<Tuple2<User, List<PurchaseHistory>>> createUserPurchaseHistories() {
+    public Flux<User> createUserData() {
 
-        return rawDataParser.parseUserData()
-                .map(vo -> {
-                    User user = toUser(vo);
-                    List<PurchaseHistory> phs = toPurchaseHistories(vo.getPurchaseHistory());
-                    return Tuples.of(user, phs);
-                });
+        if (userRepository.findAll().size() > 0) {
+            throw new RuntimeException("there are still user data in database, please clean it first!");
+        }
+
+        Map<String, RestaurantMenus> restMenusMap = getRestaurantMenus();
+
+        return rawDataExtractor.extractUserData()
+                .map(rawDataTransformer::transformUserData)
+                .map(t -> dbDataLoader.loadUserData(t, restMenusMap));
     }
 
-    public Restaurant toRestaurant(RestaurantVo vo) {
+    protected Map<String, RestaurantMenus> getRestaurantMenus() {
 
-        List<OpenHours> openHours = openHoursDataParser.parseOpenHours(vo.getOpeningHours());
+        List<Restaurant> rs = restaurantRepository.findAll();
 
-        List<Menu> menus = toMenus(vo.getMenu());
+        Map<Long, RestaurantMenus> restMenusMap = rs.stream()
+                .map(this::toRestaurantMenus)
+                .collect(Collectors.toMap(RestaurantMenus::getId, Function.identity()));
 
-        Restaurant restaurant = Restaurant.builder()
-                .name(vo.getRestaurantName())
-                .cashBalance(BigDecimal.valueOf(vo.getCashBalance()))
+        List<Menu> menus = menuRepository.findAll();
+
+        for (Menu menu : menus) {
+
+            Long restaurantId = menu.getRestaurantId();
+
+            RestaurantMenus restMenus = restMenusMap.get(restaurantId);
+            if (restMenus == null) {
+                log.error("cannot find restaurant by id for menu: {}", menu);
+                continue;
+            }
+
+            Map<String, Long> menusMap = restMenus.getMenus();
+
+            if (menusMap.containsKey(menu.getDishName())) {
+                log.error("dish name duplicated: {}", menu);
+            }
+
+            menusMap.put(menu.getDishName(), menu.getId());
+        }
+
+        return restMenusMap.values().stream().collect(Collectors.toMap(RestaurantMenus::getName, Function.identity()));
+    }
+
+    private RestaurantMenus toRestaurantMenus(Restaurant restaurant) {
+
+        Map<String, Long> menusMap = new HashMap<>();
+
+        return RestaurantMenus.builder()
+                .id(restaurant.getId())
+                .name(restaurant.getName())
+                .menus(menusMap)
                 .build();
-
-        restaurant.addOpenHours(openHours);
-        restaurant.addMenus(menus);
-        return restaurant;
-    }
-
-    protected List<Menu> toMenus(List<RestaurantVo.MenuVo> vos) {
-
-        return vos.stream()
-                .map(vo -> Menu.builder()
-                        .dishName(vo.getDishName())
-                        .price(BigDecimal.valueOf(vo.getPrice()))
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    public User toUser(UserVo vo) {
-
-        User user = User.builder()
-                .id(vo.getId())
-                .name(vo.getName())
-                .cashBalance(BigDecimal.valueOf(vo.getCashBalance()))
-                .build();
-        return user;
-    }
-
-    protected List<PurchaseHistory> toPurchaseHistories(List<UserVo.PurchaseHistoryVo> vos) {
-
-        return vos.stream()
-                .map(vo -> PurchaseHistory.builder()
-                        .restaurantName(vo.getRestaurantName())
-                        .dishName(vo.getDishName())
-                        .transactionAmount(BigDecimal.valueOf(vo.getTransactionAmount()))
-                        .transactionDate(PurchaseHistory.parseTxDate(vo.getTransactionDate()))
-                        .build())
-                .collect(Collectors.toList());
     }
 }

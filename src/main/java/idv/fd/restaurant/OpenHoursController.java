@@ -39,7 +39,7 @@ public class OpenHoursController implements OpenHoursApi {
             @RequestParam(name = "dayOfWeek", required = false) @Min(0) @Max(6) Integer dayOfWeek) {
 
         log.debug("find open hours by time {} dayOfWeek {}", timeStr, dayOfWeek);
-        LocalTime time = OpenHours.parseTime(timeStr);
+        LocalTime time = OpenHours.parseLocalTime(timeStr);
         return openHoursService.findOpenHoursByTime(dayOfWeek, time);
     }
 

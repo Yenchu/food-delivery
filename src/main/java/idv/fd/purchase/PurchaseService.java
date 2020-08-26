@@ -45,7 +45,7 @@ public class PurchaseService {
         Menu menu = menuService.findMenuById(purchase.getMenuId());
 
         // find and lock restaurant
-        Restaurant rest = restaurantService.findRestaurantByIdLocked(menu.getRestaurant().getId());
+        Restaurant rest = restaurantService.findRestaurantByIdLocked(menu.getRestaurantId());
 
         BigDecimal amount = menu.getPrice();
 

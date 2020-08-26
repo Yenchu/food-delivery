@@ -82,7 +82,7 @@ public interface RestaurantApi {
     })
     @GetMapping("/restaurants/findByOpenHours")
     List<? extends RestaurantInfo> findRestaurantsByOpenPeriod(
-            @Parameter(name = "openHours", description = "The specified open hours (min = 1, max = 24)") @Min(1) @Max(24) int openHours,
+            @Parameter(name = "openHours", description = "The specified open hours (min = 1, max = 24)") @Min(1) int openHours,
             @Parameter(name = "lessThan", description = "To indicate less or more than the specified open hours") boolean lessThan,
             @Parameter(name = "perWeek", description = "To indicate per week or per day") boolean perWeek);
 
