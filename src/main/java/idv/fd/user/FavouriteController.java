@@ -1,8 +1,7 @@
 package idv.fd.user;
 
-import idv.fd.restaurant.model.Restaurant;
-import idv.fd.user.model.Favourite;
 import idv.fd.user.dto.AddFavourite;
+import idv.fd.user.model.Favourite;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,11 +29,8 @@ public class FavouriteController {
     @PostMapping("/favourites")
     public Favourite addFavourite(@RequestBody AddFavourite cf) {
 
-        Restaurant re = new Restaurant();
-        re.setId(cf.getRestaurantId());
-
         Favourite fv = Favourite.builder()
-                .userId(cf.getUserId()).restaurant(re).build();
+                .userId(cf.getUserId()).restaurantId(cf.getRestaurantId()).build();
         return favouriteRepository.save(fv);
     }
 

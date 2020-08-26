@@ -24,6 +24,7 @@ public class Menu {
     @Transient
     private String restaurantName;
 
+    @Column(length = 500)
     private String dishName;
 
     private BigDecimal price;

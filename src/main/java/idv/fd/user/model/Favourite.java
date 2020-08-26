@@ -21,8 +21,9 @@ public class Favourite {
 
     private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id", nullable = false)
-    private Restaurant restaurant;
+    private Long restaurantId;
+
+    @Transient
+    private String restaurantName;
 
 }
