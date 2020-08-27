@@ -1,10 +1,10 @@
--- CREATE DATABASE demo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE demo CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 USE `demo`;
 
 DROP TABLE IF EXISTS `favourite`;
 DROP TABLE IF EXISTS `purchase_history`;
-DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS `app_user`;
 DROP TABLE IF EXISTS `menu`;
 DROP TABLE IF EXISTS `open_hours`;
 DROP TABLE IF EXISTS `restaurant`;
@@ -34,7 +34,7 @@ CREATE TABLE `menu` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-CREATE TABLE `user` (
+CREATE TABLE `app_user` (
   `id` int(11) NOT NULL,
   `name` varchar(128) NOT NULL,
   `cash_balance` decimal(12, 2),

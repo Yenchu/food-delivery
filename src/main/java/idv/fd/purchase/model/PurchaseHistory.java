@@ -46,6 +46,7 @@ public class PurchaseHistory {
 
     private BigDecimal transactionAmount;
 
+    @Column(name = "transaction_date", columnDefinition = "TIMESTAMP WITH TIME ZONE")
     @JsonFormat(pattern = TX_DATE_FORMAT, timezone = "UTC")
     private Instant transactionDate;
 

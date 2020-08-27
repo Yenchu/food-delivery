@@ -3,7 +3,6 @@ package idv.fd.restaurant;
 import idv.fd.restaurant.dto.DishInfo;
 import idv.fd.restaurant.dto.DishNumb;
 import idv.fd.restaurant.model.Menu;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -46,14 +45,14 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     @Query(value = SELECT_DISH_NUMB
             + " group by restaurantId"
-            + " having dishNumb < ?1"
+            + " having count(m.id) < ?1"
             + " order by dishNumb", nativeQuery = true)
     List<DishNumb> findByDishesLessThan(int dishNumb);
 
 
     @Query(value = SELECT_DISH_NUMB
             + " group by restaurantId"
-            + " having dishNumb > ?1"
+            + " having count(m.id) > ?1"
             + " order by dishNumb", nativeQuery = true)
     List<DishNumb> findByDishesGreaterThan(int dishNumb);
 
@@ -61,7 +60,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Query(value = SELECT_DISH_NUMB
             + " where m.price >= :minPrice and m.price <= :maxPrice"
             + " group by restaurantId"
-            + " having dishNumb < :dishNumb"
+            + " having count(m.id) < :dishNumb"
             + " order by dishNumb", nativeQuery = true)
     List<DishNumb> findByDishesLessThanAndWithinPrices(
             @Param("dishNumb") int dishNumb, @Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice);
@@ -70,7 +69,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Query(value = SELECT_DISH_NUMB
             + " where m.price >= :minPrice and m.price <= :maxPrice"
             + " group by restaurantId"
-            + " having dishNumb > :dishNumb"
+            + " having count(m.id) > :dishNumb"
             + " order by dishNumb", nativeQuery = true)
     List<DishNumb> findByDishesGreaterThanAndWithinPrices(
             @Param("dishNumb") int dishNumb, @Param("minPrice") BigDecimal minPrice, @Param("maxPrice") BigDecimal maxPrice);

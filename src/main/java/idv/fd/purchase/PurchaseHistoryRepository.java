@@ -21,10 +21,14 @@ public interface PurchaseHistoryRepository extends JpaRepository<PurchaseHistory
             + " where transaction_date between :fromDate and :toDate"
             + " group by user_id) s";
 
+    List<PurchaseHistory> findByUserId(Long userId);
+
+    List<PurchaseHistory> findByTransactionDateGreaterThanEqualAndTransactionDateLessThan(Instant fromDate, Instant toDate);
+
 
     @Query(value = "select u.id as userId, u.name as userName, sum(p.transaction_amount) as txAmount"
             + " from purchase_history p"
-            + " inner join user u on p.user_id = u.id"
+            + " inner join app_user u on p.user_id = u.id"
             + " where p.transaction_date between :fromDate and :toDate"
             + " group by userId"
             + " order by txAmount desc"
@@ -41,14 +45,15 @@ public interface PurchaseHistoryRepository extends JpaRepository<PurchaseHistory
     @Query(value = "select restaurant_id as restaurantId, restaurant_name as restaurantName, count(id) as txNumb"
             + " from purchase_history"
             + " group by restaurantId, restaurantName"
-            + " having txNumb ="
+            + " having count(id) ="
             + " (select max(c.txCount) from (select restaurant_id, count(id) as txCount from purchase_history group by restaurant_id) c)", nativeQuery = true)
     List<RestaurantTxAmount> findMaxTxNumbRestaurants();
+
 
     @Query(value = "select restaurant_id as restaurantId, restaurant_name as restaurantName, sum(transaction_amount) as txAmount"
             + " from purchase_history"
             + " group by restaurantId, restaurantName"
-            + " having txAmount ="
+            + " having sum(transaction_amount) ="
             + " (select max(c.txSum) from (select restaurant_id, sum(transaction_amount) as txSum from purchase_history group by restaurant_id) c)", nativeQuery = true)
     List<RestaurantTxAmount> findMaxTxAmountRestaurants();
 

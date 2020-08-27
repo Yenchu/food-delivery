@@ -17,7 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.time.*;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,5 +86,27 @@ public class PurchaseTests {
 
         assertThat(user.getCashBalance()).isEqualTo(prevUserBalance.subtract(dishPrice));
         assertThat(rest.getCashBalance()).isEqualTo(prevRestBalance.add(dishPrice));
+    }
+
+    @Test
+    public void findByUserId() {
+
+        Long userId = 1L;
+        List<PurchaseHistory> phs = purchaseService.findByUserId(userId);
+        assertThat(phs).allMatch(ph -> ph.getUserId().equals(userId));
+    }
+
+    @Test
+    public void findByDateRange() {
+
+        LocalDateTime fromL = LocalDateTime.of(2020, 8, 27, 14, 15, 59);
+        Instant from = fromL.atZone(ZoneId.systemDefault()).toInstant();
+        LocalDateTime toL = LocalDateTime.of(2020, 8, 27, 15, 0, 0);
+        Instant to = toL.atZone(ZoneId.systemDefault()).toInstant();
+        System.out.println("from " + from + " to " + to);
+
+        List<PurchaseHistory> phs = purchaseService.findByDateRange(from, to);
+        phs.stream().forEach(System.out::println);
+        assertThat(phs).allMatch(ph -> from.isBefore(ph.getTransactionDate()) && to.isAfter(ph.getTransactionDate()));
     }
 }

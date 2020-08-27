@@ -72,6 +72,16 @@ public class PurchaseService {
         return ph;
     }
 
+    public List<PurchaseHistory> findByUserId(Long userId) {
+
+        return purchaseHistoryRepository.findByUserId(userId);
+    }
+
+    public List<PurchaseHistory> findByDateRange(Instant fromDate, Instant toDate) {
+
+        return purchaseHistoryRepository.findByTransactionDateGreaterThanEqualAndTransactionDateLessThan(fromDate, toDate);
+    }
+
     public List<UserTxAmount> findTopTxUsers(int top, Instant fromDate, Instant toDate) {
 
         return purchaseHistoryRepository.findTopTxUsers(top, fromDate, toDate);
