@@ -23,6 +23,8 @@ management:
       base-path: /actuator
       exposure:
         include: '*'
+  metrics:
+    web.server.request.autotime.enabled: true
 
 server:
   compression:

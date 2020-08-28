@@ -37,11 +37,12 @@ public class RawDataExtractor {
         this.userDataUrl = userDataUrl;
 
         this.webClient = webClientBuilder
-                .exchangeStrategies(ExchangeStrategies.builder().codecs(configurer -> {
+                .codecs(configurer -> {
                     ObjectMapper mapper = new ObjectMapper();
                     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                    configurer.customCodecs().register(new Jackson2JsonDecoder(mapper, MimeTypeUtils.parseMimeType(MediaType.TEXT_PLAIN_VALUE)));
-                }).build())
+                    configurer.customCodecs()
+                            .register(new Jackson2JsonDecoder(mapper, MimeTypeUtils.parseMimeType(MediaType.TEXT_PLAIN_VALUE)));
+                })
                 .build();
     }
 

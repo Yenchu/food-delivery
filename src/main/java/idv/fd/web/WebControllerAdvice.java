@@ -59,17 +59,9 @@ public class WebControllerAdvice
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> exception(Exception e, HttpServletRequest request) {
+    public ResponseEntity<Object> exception(Exception e, HttpServletRequest httpRequest, WebRequest request) {
 
-        log.error(e.getMessage(), e);
-        HttpStatus status = getStatus(request);
-
-        AppError body = AppError.builder()
-                .status(status.value())
-                .msg(status.getReasonPhrase())
-                .build();
-
-        return new ResponseEntity<>(body, new HttpHeaders(), status);
+        return handleExceptionInternal(e, null, new HttpHeaders(), getStatus(httpRequest), request);
     }
 
     @Override
